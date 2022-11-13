@@ -9,11 +9,12 @@ public class Tile : MonoBehaviour
     private Color tileColor = new Color(1, 1, 1, 0f);
     private Color tileHighlightColor = new Color(1, 1, 1, 0.3f);
     private bool isTaken = false;
+    private ChessPiece pieceOnTile = null;
 
     public int X => tilePosition.x;
     public int Y => tilePosition.y;
 
-    void Start()
+    private void Awake()
     {
         tileRenderer = GetComponent<Renderer>();
         tileRenderer.material.color = tileColor;
@@ -37,6 +38,7 @@ public class Tile : MonoBehaviour
 
     public void DrawTile(int _x, int _y)
     {
+
         tileRenderer.material.color = tileColor;
     }
 
@@ -65,5 +67,10 @@ public class Tile : MonoBehaviour
     public void ToggleTaken()
     {
         isTaken = !isTaken;
+    }
+
+    public void SetChessPiece(ChessPiece piece)
+    {
+        pieceOnTile = piece;
     }
 }

@@ -43,6 +43,7 @@ public class Chessboard : MonoBehaviour
     private void Start()
     {
         DrawBoard();
+        SpawnAllPieces();
     }
 
     private void Update()
@@ -61,29 +62,32 @@ public class Chessboard : MonoBehaviour
                 if (true) // turn check
                 {
                     curentlyDragged = chessPieces[tile.X, tile.Y];
+                    tile.SetChessPiece(null);
                 }
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0))
         {
+            if (curentlyDragged == null)
+            {
+                return;
+            }
+
             previousPosition = curentlyDragged.position;
             cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(cameraRay, out hit))
             {
                 Tile tile = hit.collider.GetComponent<Tile>();
-                if (tile == null || chessPieces[tile.X, tile.Y] == null)
-                {
-                    return;
-                }
 
-                bool validMove = MoveTo(curentlyDragged, tile.X, tile.Y);
-
+                bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
+                tile.SetChessPiece(curentlyDragged);
                 if (validMove == false)
                 {
-                    curentlyDragged.transform.position = tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position;
+                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
                     curentlyDragged = null;
+                    tile.SetChessPiece(null);
                 }
 
             }
@@ -149,6 +153,14 @@ public class Chessboard : MonoBehaviour
         PositionAllPieces();
     }
 
+    private ChessPiece SpanwSinglePiece(ChessPieceType _pieceType, TeamColor _team)
+    {
+        ChessPiece piece = Instantiate(chessData.GetModel(_pieceType), transform).GetComponent<ChessPiece>();
+        piece.SetTeam(_team);
+        piece.SetType(_pieceType);
+        return piece;
+    }
+
     private void PositionAllPieces()
     {
         for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
@@ -160,27 +172,41 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    private void PositionSinglePiece(int _x, int _y, bool force = false)
+    private void PositionSinglePiece(int _x, int _y, bool _force = false)
     {
         if (chessPieces[_x, _y] == null)
         {
             return;
         }
 
-        chessPieces[_x, _y].transform.position = tiles[_x, _y].transform.position;
+        chessPieces[_x, _y].SetPosition(tiles[_x, _y].transform.position, _force);
+        chessPieces[_x, _y].SetPosition(_x, _y);
         tiles[_x, _y].ToggleTaken();
     }
+    #endregion
 
+    #region MovePiece
 
-    private ChessPiece SpanwSinglePiece(ChessPieceType _pieceType, TeamColor _team)
+    private bool MoveTo(ref ChessPiece _piece, int _x, int _y)
     {
-        ChessPiece piece = Instantiate(chessData.GetModel(_pieceType), transform).GetComponent<ChessPiece>();
-        piece.SetTeam(_team);
-        piece.SetType(_pieceType);
-        return piece;
+        if (chessPieces[_x, _y] != null)
+        {
+            if (chessPieces[_x, _y].team == _piece.team)
+            {
+                return false;
+            }
+            else if (chessPieces[_x, _y].team != _piece.team)
+            {
+                return false;
+            }
+        }
+        chessPieces[_x, _y] = _piece;
+        chessPieces[_piece.position.x, _piece.position.y] = null;
+
+        PositionSinglePiece(_x, _y);
+
+        return true;
     }
-
-
 
     #endregion
 }

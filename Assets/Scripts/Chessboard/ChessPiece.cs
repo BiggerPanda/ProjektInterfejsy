@@ -23,7 +23,7 @@ public class ChessPiece : MonoBehaviour
     private MeshRenderer pieceRenderer;
     private Material pieceMaterial;
     private Vector3 desiredPosition;
-    private Vector3 desiredScale;
+    private Vector3 desiredScale = Vector3.one;
 
 
     private void Awake()
@@ -32,20 +32,51 @@ public class ChessPiece : MonoBehaviour
         pieceMaterial = pieceRenderer.material;
     }
 
-    public void SetTeam(TeamColor _team)
+    private void Update()
+    {
+        if (transform.localPosition != desiredPosition)
+        {
+            transform.localPosition = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * 10f);
+        }
+
+        if (transform.localScale != desiredScale)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, desiredScale, Time.deltaTime * 10f);
+        }
+    }
+
+    public virtual void SetTeam(TeamColor _team)
     {
         team = _team;
         pieceMaterial = team == TeamColor.White ? whiteMaterial : blackMaterial;
         pieceRenderer.material = pieceMaterial;
     }
 
-    public void SetType(ChessPieceType _type)
+    public virtual void SetType(ChessPieceType _type)
     {
         type = _type;
     }
 
-    public void SetPosition(int _x, int _y)
+    public virtual void SetPosition(int _x, int _y)
     {
         position = new Vector2Int(_x, _y);
+    }
+
+    public virtual void SetPosition(Vector3 _position, bool force = false)
+    {
+        desiredPosition = _position;
+        if (force)
+        {
+            transform.localPosition = desiredPosition;
+        }
+    }
+
+    public virtual void SetScale(Vector3 _scale, bool force = false)
+    {
+        desiredScale = _scale;
+        if (force)
+        {
+            transform.localScale = desiredScale;
+        }
     }
 }
