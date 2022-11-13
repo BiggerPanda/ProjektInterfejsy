@@ -20,6 +20,10 @@ public class Chessboard : MonoBehaviour
 
     private Tile[,] tiles = new Tile[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
     private ChessPiece[,] chessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
+    private ChessPiece curentlyDragged = null;
+    private Vector2Int previousPosition = Vector2Int.zero;
+    private RaycastHit hit;
+    private Ray cameraRay;
 
     private void Awake()
     {
@@ -45,15 +49,43 @@ public class Chessboard : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(cameraRay, out hit))
             {
                 Tile tile = hit.collider.GetComponent<Tile>();
-                if (tile != null)
+                if (tile == null || chessPieces[tile.X, tile.Y] == null)
                 {
-                    Debug.Log(tile.GetTilePosition());
+                    return;
                 }
+
+                if (true) // turn check
+                {
+                    curentlyDragged = chessPieces[tile.X, tile.Y];
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            previousPosition = curentlyDragged.position;
+            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(cameraRay, out hit))
+            {
+                Tile tile = hit.collider.GetComponent<Tile>();
+                if (tile == null || chessPieces[tile.X, tile.Y] == null)
+                {
+                    return;
+                }
+
+                bool validMove = MoveTo(curentlyDragged, tile.X, tile.Y);
+
+                if (validMove == false)
+                {
+                    curentlyDragged.transform.position = tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position;
+                    curentlyDragged = null;
+                }
+
             }
         }
     }

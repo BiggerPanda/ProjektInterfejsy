@@ -10,6 +10,9 @@ public class Tile : MonoBehaviour
     private Color tileHighlightColor = new Color(1, 1, 1, 0.3f);
     private bool isTaken = false;
 
+    public int X => tilePosition.x;
+    public int Y => tilePosition.y;
+
     void Start()
     {
         tileRenderer = GetComponent<Renderer>();
