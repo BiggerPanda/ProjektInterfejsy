@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571343, b: 0.30692208, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -301,151 +301,72 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!1 &272019468
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 272019470}
-  - component: {fileID: 272019469}
-  m_Layer: 0
-  m_Name: Chessboard
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &272019469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 272019468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5540897edf1fe90c79492f5e66ecaa67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileSize: 1.25
-  tileGameObject: {fileID: 6270645956670908437, guid: 942f71c5bfe490ccdb9a6d0a50a3d238,
-    type: 3}
-  chessData: {fileID: 11400000, guid: 584e3199f1e99b2c2b148b00dcf26468, type: 2}
---- !u!4 &272019470
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 272019468}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1474750230}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &962377194 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100000, guid: bff675daa93e14cd1a91d9247f54ea89,
-    type: 3}
-  m_PrefabInstance: {fileID: 1474750229}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &1474750229
+--- !u!1001 &5701437985269172831
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 272019470}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 100000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
-      propertyPath: m_Name
-      value: GPVFX_Chessboard Grid
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+    - target: {fileID: 5701437984999864913, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
+    - target: {fileID: 5701437984999864915, guid: 88214a90a86c2974d8239e25452e71a5,
+        type: 3}
+      propertyPath: m_Name
+      value: Chessboard
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
---- !u!4 &1474750230 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400000, guid: bff675daa93e14cd1a91d9247f54ea89,
-    type: 3}
-  m_PrefabInstance: {fileID: 1474750229}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &1474750233
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 962377194}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: bff675daa93e14cd1a91d9247f54ea89, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 88214a90a86c2974d8239e25452e71a5, type: 3}

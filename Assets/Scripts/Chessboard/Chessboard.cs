@@ -17,9 +17,14 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float tileSize = 1.3f;
     [SerializeField] private GameObject tileGameObject;
     [SerializeField] private ChessModelData chessData;
+    [SerializeField] private float deadSize = 0.25f;
+    [SerializeField] private GameObject deathPlaceWhite = null;
+    [SerializeField] private GameObject deathPlaceBlack = null;
 
     private Tile[,] tiles = new Tile[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
     private ChessPiece[,] chessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
+    private List<ChessPiece> whiteDead = new List<ChessPiece>();
+    private List<ChessPiece> blackDead = new List<ChessPiece>();
     private ChessPiece curentlyDragged = null;
     private Vector2Int previousPosition = Vector2Int.zero;
     private RaycastHit hit;
@@ -79,7 +84,11 @@ public class Chessboard : MonoBehaviour
 
             if (Physics.Raycast(cameraRay, out hit))
             {
-                Tile tile = hit.collider.GetComponent<Tile>();
+                if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
+                {
+                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                    curentlyDragged = null;
+                }
 
                 bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
                 tile.SetChessPiece(curentlyDragged);
@@ -87,7 +96,11 @@ public class Chessboard : MonoBehaviour
                 {
                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
                     curentlyDragged = null;
-                    tile.SetChessPiece(null);
+
+                }
+                else
+                {
+                    curentlyDragged = null;
                 }
 
             }
@@ -195,9 +208,21 @@ public class Chessboard : MonoBehaviour
             {
                 return false;
             }
-            else if (chessPieces[_x, _y].team != _piece.team)
+
+            ChessPiece enemyChessPiece = chessPieces[_x, _y];
+
+            if (enemyChessPiece.team == TeamColor.White)
             {
-                return false;
+                whiteDead.Add(enemyChessPiece);
+                enemyChessPiece.SetScale(Vector3.one * deadSize);
+                enemyChessPiece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
+            }
+            else
+            {
+                blackDead.Add(enemyChessPiece);
+                enemyChessPiece.SetScale(Vector3.one * deadSize);
+                enemyChessPiece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
+
             }
         }
         chessPieces[_x, _y] = _piece;
