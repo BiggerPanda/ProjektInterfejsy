@@ -102,8 +102,19 @@ public class Chessboard : MonoBehaviour
                 {
                     curentlyDragged = null;
                 }
-
             }
+            else
+            {
+                curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                curentlyDragged = null;
+            }
+        }
+
+        if (curentlyDragged != null)
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = 10;
+            curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
         }
     }
 
