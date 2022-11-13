@@ -24,6 +24,7 @@ public class ChessPiece : MonoBehaviour
     private Material pieceMaterial;
     private Vector3 desiredPosition;
     private Vector3 desiredScale = Vector3.one;
+    protected List<Vector2Int> avaliableMoves;
 
 
     private void Awake()
@@ -43,6 +44,19 @@ public class ChessPiece : MonoBehaviour
         {
             transform.localScale = Vector3.Lerp(transform.localScale, desiredScale, Time.deltaTime * 10f);
         }
+    }
+
+    public virtual List<Vector2Int> GetAvaliableMoves(ref ChessPiece[,] _board, int _xCount, int _yCount)
+    {
+        avaliableMoves = new List<Vector2Int>();
+
+        avaliableMoves.Add(new Vector2Int(2, 2));
+        avaliableMoves.Add(new Vector2Int(2, 3));
+        avaliableMoves.Add(new Vector2Int(3, 2));
+        avaliableMoves.Add(new Vector2Int(2, 4));
+
+
+        return avaliableMoves;
     }
 
     public virtual void SetTeam(TeamColor _team)

@@ -8,8 +8,10 @@ public class Tile : MonoBehaviour
     private Vector2Int tilePosition = Vector2Int.zero;
     private Color tileColor = new Color(1, 1, 1, 0f);
     private Color tileHighlightColor = new Color(1, 1, 1, 0.3f);
+    private Color tileAvaliable = new Color(0.5f, 0.5f, 0, 0.5f);
     private bool isTaken = false;
     private ChessPiece pieceOnTile = null;
+    public static bool IsPieceDraged = false;
 
     public int X => tilePosition.x;
     public int Y => tilePosition.y;
@@ -22,12 +24,18 @@ public class Tile : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        Highlight();
+        if (IsPieceDraged == false)
+        {
+            Highlight();
+        }
     }
 
     private void OnMouseExit()
     {
-        Unhighlight();
+        if (IsPieceDraged == false)
+        {
+            UnHighlight();
+        }
     }
 
     public Tile SetPosition(int _x, int _y)
@@ -54,7 +62,7 @@ public class Tile : MonoBehaviour
         tileRenderer.material.color = tileHighlightColor;
     }
 
-    public void Unhighlight()
+    public void UnHighlight()
     {
         DrawTile((int)tilePosition.x, (int)tilePosition.y);
     }
@@ -72,5 +80,15 @@ public class Tile : MonoBehaviour
     public void SetChessPiece(ChessPiece piece)
     {
         pieceOnTile = piece;
+    }
+
+    public void MakeAvaliable()
+    {
+        tileRenderer.material.color = tileAvaliable;
+    }
+
+    public void MakeUnavaliable()
+    {
+        DrawTile((int)tilePosition.x, (int)tilePosition.y);
     }
 }

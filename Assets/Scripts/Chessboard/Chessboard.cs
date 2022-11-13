@@ -25,6 +25,7 @@ public class Chessboard : MonoBehaviour
     private ChessPiece[,] chessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
     private List<ChessPiece> whiteDead = new List<ChessPiece>();
     private List<ChessPiece> blackDead = new List<ChessPiece>();
+    private List<Vector2Int> avaliableMoves = new List<Vector2Int>();
     private ChessPiece curentlyDragged = null;
     private Vector2Int previousPosition = Vector2Int.zero;
     private RaycastHit hit;
@@ -66,7 +67,10 @@ public class Chessboard : MonoBehaviour
 
                 if (true) // turn check
                 {
+                    Tile.IsPieceDraged = true;
                     curentlyDragged = chessPieces[tile.X, tile.Y];
+                    avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                    HighlightAvaliableTiles();
                     tile.SetChessPiece(null);
                 }
             }
@@ -91,16 +95,19 @@ public class Chessboard : MonoBehaviour
                 }
 
                 bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
+                RemoveHighlightedTiles();
                 tile.SetChessPiece(curentlyDragged);
                 if (validMove == false)
                 {
                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
                     curentlyDragged = null;
+                    Tile.IsPieceDraged = false;
 
                 }
                 else
                 {
                     curentlyDragged = null;
+                    Tile.IsPieceDraged = false;
                 }
             }
             else
@@ -210,9 +217,26 @@ public class Chessboard : MonoBehaviour
     #endregion
 
     #region MovePiece
+    private bool ContainsValidMove(ref List<Vector2Int> _moves, Vector2 move)
+    {
+        for (int i = 0; i < _moves.Count; i++)
+        {
+            if (_moves[i].x == move.x && _moves[i].y == move.y)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private bool MoveTo(ref ChessPiece _piece, int _x, int _y)
     {
+        if (ContainsValidMove(ref avaliableMoves, new Vector2(_x, _y)) == false)
+        {
+            return false;
+        }
+
         if (chessPieces[_x, _y] != null)
         {
             if (chessPieces[_x, _y].team == _piece.team)
@@ -244,5 +268,30 @@ public class Chessboard : MonoBehaviour
         return true;
     }
 
+    private void HighlightAvaliableTiles()
+    {
+        if (curentlyDragged == null)
+        {
+            return;
+        }
+
+        foreach (Vector2Int move in avaliableMoves)
+        {
+            tiles[move.x, move.y].MakeAvaliable();
+        }
+    }
+
+    private void RemoveHighlightedTiles()
+    {
+        if (curentlyDragged == null)
+        {
+            return;
+        }
+
+        foreach (Vector2Int move in avaliableMoves)
+        {
+            tiles[move.x, move.y].MakeUnavaliable();
+        }
+    }
     #endregion
 }
