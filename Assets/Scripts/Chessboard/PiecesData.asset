@@ -14,14 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChessModelTypes:
   - PieceType: 0
-    PieceModel: {fileID: 100000, guid: dab6c0dea21994386a57acc588faa9e5, type: 3}
+    PieceModel: {fileID: 1148280621653189617, guid: 684cff79236a46f40a5e84383e0736ae,
+      type: 3}
   - PieceType: 1
-    PieceModel: {fileID: 100000, guid: c5f20314b232248d3972665d64a42a3e, type: 3}
+    PieceModel: {fileID: 5780819185845811934, guid: 7f0887f7f19ff46039adf66273cdea65,
+      type: 3}
   - PieceType: 2
-    PieceModel: {fileID: 100000, guid: 4b1b985d7c66d4cba91946bc280878ce, type: 3}
+    PieceModel: {fileID: 8407044953210654769, guid: f69d712459107d39cbe7a44713e3c03b,
+      type: 3}
   - PieceType: 3
-    PieceModel: {fileID: 100000, guid: 3ebcae0daf8394e548da469833b04106, type: 3}
+    PieceModel: {fileID: 5650962637399459471, guid: c961d45610acab610bc22c98d56bb171,
+      type: 3}
   - PieceType: 4
-    PieceModel: {fileID: 100000, guid: 4ed40abe3301f47969aa44350488c7d0, type: 3}
+    PieceModel: {fileID: 5403609942017836974, guid: 3a24036de15ca8aaaaea9633418d35c2,
+      type: 3}
   - PieceType: 5
-    PieceModel: {fileID: 100000, guid: 9c7ba5185d28d475b902a82911b83e2c, type: 3}
+    PieceModel: {fileID: 13588881084566945, guid: 6691c643c0939fc9d84eb839870dfdf7,
+      type: 3}

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 
+public enum TeamColor
+{
+    White,
+    Black
+}
 
 public class Chessboard : MonoBehaviour
 {
@@ -11,8 +16,10 @@ public class Chessboard : MonoBehaviour
 
     [SerializeField] private float tileSize = 1.3f;
     [SerializeField] private GameObject tileGameObject;
+    [SerializeField] private ChessModelData chessData;
 
     private Tile[,] tiles = new Tile[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
+    private ChessPiece[,] chessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
 
     private void Awake()
     {
@@ -73,4 +80,75 @@ public class Chessboard : MonoBehaviour
         }
     }
 
+
+    #region SpawnPieces
+
+    [Button("Spawn Pieces")]
+    private void SpawnAllPieces()
+    {
+        chessPieces[0, 0] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.White);
+        chessPieces[1, 0] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.White);
+        chessPieces[2, 0] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.White);
+        chessPieces[3, 0] = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.White);
+        chessPieces[4, 0] = SpanwSinglePiece(ChessPieceType.King, TeamColor.White);
+        chessPieces[5, 0] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.White);
+        chessPieces[6, 0] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.White);
+        chessPieces[7, 0] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.White);
+
+        for (int i = 0; i < CHESSBOARD_SIZE_X; i++)
+        {
+            chessPieces[i, 1] = SpanwSinglePiece(ChessPieceType.Pawn, TeamColor.White);
+        }
+
+        chessPieces[0, 7] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.Black);
+        chessPieces[1, 7] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.Black);
+        chessPieces[2, 7] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.Black);
+        chessPieces[3, 7] = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.Black);
+        chessPieces[4, 7] = SpanwSinglePiece(ChessPieceType.King, TeamColor.Black);
+        chessPieces[5, 7] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.Black);
+        chessPieces[6, 7] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.Black);
+        chessPieces[7, 7] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.Black);
+
+        for (int i = 0; i < CHESSBOARD_SIZE_X; i++)
+        {
+            chessPieces[i, 6] = SpanwSinglePiece(ChessPieceType.Pawn, TeamColor.Black);
+        }
+
+        PositionAllPieces();
+    }
+
+    private void PositionAllPieces()
+    {
+        for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
+        {
+            for (int y = 0; y < CHESSBOARD_SIZE_Y; y++)
+            {
+                PositionSinglePiece(x, y, true);
+            }
+        }
+    }
+
+    private void PositionSinglePiece(int _x, int _y, bool force = false)
+    {
+        if (chessPieces[_x, _y] == null)
+        {
+            return;
+        }
+
+        chessPieces[_x, _y].transform.position = tiles[_x, _y].transform.position;
+        tiles[_x, _y].ToggleTaken();
+    }
+
+
+    private ChessPiece SpanwSinglePiece(ChessPieceType _pieceType, TeamColor _team)
+    {
+        ChessPiece piece = Instantiate(chessData.GetModel(_pieceType), transform).GetComponent<ChessPiece>();
+        piece.SetTeam(_team);
+        piece.SetType(_pieceType);
+        return piece;
+    }
+
+
+
+    #endregion
 }

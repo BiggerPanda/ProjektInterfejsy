@@ -6,12 +6,14 @@ public class Tile : MonoBehaviour
 {
     private Renderer tileRenderer = null;
     private Vector2Int tilePosition = Vector2Int.zero;
-    private Color tileColor = new Color(1, 1, 1, 0.1f);
-    private Color tileHighlightColor = new Color(1, 0, 1, 0.5f);
+    private Color tileColor = new Color(1, 1, 1, 0f);
+    private Color tileHighlightColor = new Color(1, 1, 1, 0.3f);
+    private bool isTaken = false;
 
     void Start()
     {
         tileRenderer = GetComponent<Renderer>();
+        tileRenderer.material.color = tileColor;
     }
 
     private void OnMouseEnter()
@@ -55,5 +57,10 @@ public class Tile : MonoBehaviour
     public Vector2Int GetTilePosition()
     {
         return tilePosition;
+    }
+
+    public void ToggleTaken()
+    {
+        isTaken = !isTaken;
     }
 }

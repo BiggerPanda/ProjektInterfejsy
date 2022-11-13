@@ -333,6 +333,7 @@ MonoBehaviour:
   tileSize: 1.25
   tileGameObject: {fileID: 6270645956670908437, guid: 942f71c5bfe490ccdb9a6d0a50a3d238,
     type: 3}
+  chessData: {fileID: 11400000, guid: 584e3199f1e99b2c2b148b00dcf26468, type: 2}
 --- !u!4 &272019470
 Transform:
   m_ObjectHideFlags: 0
