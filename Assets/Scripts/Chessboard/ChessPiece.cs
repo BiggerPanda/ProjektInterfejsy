@@ -26,6 +26,14 @@ public class ChessPiece : MonoBehaviour
     private Vector3 desiredScale = Vector3.one;
     protected List<Vector2Int> avaliableMoves;
 
+    private void OnValidate()
+    {
+        if (pieceRenderer == null)
+        {
+            pieceRenderer = GetComponentInChildren<MeshRenderer>();
+            pieceMaterial = pieceRenderer.material;
+        }
+    }
 
     private void Awake()
     {
@@ -63,7 +71,7 @@ public class ChessPiece : MonoBehaviour
     {
         team = _team;
         pieceMaterial = team == TeamColor.White ? whiteMaterial : blackMaterial;
-        pieceRenderer.material = pieceMaterial;
+        pieceRenderer.sharedMaterial = pieceMaterial;
     }
 
     public virtual void SetType(ChessPieceType _type)
