@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using NaughtyAttributes;
 
@@ -15,6 +16,8 @@ public class Chessboard : MonoBehaviour
 {
     public const int CHESSBOARD_SIZE_X = 8;
     public const int CHESSBOARD_SIZE_Y = 8;
+
+    public static Chessboard Instance { get; private set; }
 
     [ReadOnly] public string Notation;
     [SerializeField] private float tileSize = 1.3f;
@@ -33,6 +36,9 @@ public class Chessboard : MonoBehaviour
     private Vector2Int previousPosition = Vector2Int.zero;
     private RaycastHit hit;
     private Ray cameraRay;
+    public InputActionReference ActivationReference;
+    [SerializeField] private XRRayInteractor rightRayInteractor;
+    [SerializeField] private XRRayInteractor leftRayInteractor;
 
     private void Awake()
     {
@@ -47,93 +53,98 @@ public class Chessboard : MonoBehaviour
                 tiles[x, y] = tile.GetComponent<Tile>().SetPosition(x, y);
             }
         }
+        Instance = this;
     }
 
     private void Start()
     {
         DrawBoard();
         SpawnAllPieces();
+
+        ActivationReference.action.performed += GrabPiece;
+        ActivationReference.action.canceled += LeftPiece;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(cameraRay, out hit))
-            {
-                Tile tile = hit.collider.GetComponent<Tile>();
-                if (tile == null || chessPieces[tile.X, tile.Y] == null)
-                {
-                    return;
-                }
+        // #if UNITY_EDITOR
+        //         if (Input.GetMouseButtonDown(0))
+        //         {
+        //             cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //             if (Physics.Raycast(cameraRay, out hit))
+        //             {
+        //                 Tile tile = hit.collider.GetComponent<Tile>();
+        //                 if (tile == null || chessPieces[tile.X, tile.Y] == null)
+        //                 {
+        //                     return;
+        //                 }
 
-                if (true) // turn check
-                {
-                    Tile.IsPieceDraged = true;
-                    curentlyDragged = chessPieces[tile.X, tile.Y];
-                    avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
-                    HighlightAvaliableTiles();
-                    tile.SetChessPiece(null);
-                }
-            }
-        }
+        //                 if (true) // turn check
+        //                 {
+        //                     Tile.IsPieceDraged = true;
+        //                     curentlyDragged = chessPieces[tile.X, tile.Y];
+        //                     avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+        //                     HighlightAvaliableTiles();
+        //                     tile.SetChessPiece(null);
+        //                 }
+        //             }
+        //         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (curentlyDragged == null)
-            {
-                return;
-            }
+        //         if (Input.GetMouseButtonUp(0))
+        //         {
+        //             if (curentlyDragged == null)
+        //             {
+        //                 return;
+        //             }
 
-            previousPosition = curentlyDragged.position;
-            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //             previousPosition = curentlyDragged.position;
+        //             cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(cameraRay, out hit))
-            {
-                if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
-                {
-                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-                    curentlyDragged = null;
-                }
+        //             if (Physics.Raycast(cameraRay, out hit))
+        //             {
+        //                 if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
+        //                 {
+        //                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+        //                     curentlyDragged = null;
+        //                 }
 
-                bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
-                RemoveHighlightedTiles();
-                tile.SetChessPiece(curentlyDragged);
-                if (validMove == false)
-                {
-                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-                    curentlyDragged = null;
-                    Tile.IsPieceDraged = false;
+        //                 bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
+        //                 RemoveHighlightedTiles();
+        //                 tile.SetChessPiece(curentlyDragged);
+        //                 if (validMove == false)
+        //                 {
+        //                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+        //                     curentlyDragged = null;
+        //                     Tile.IsPieceDraged = false;
 
-                }
-                else
-                {
-                    curentlyDragged = null;
-                    Tile.IsPieceDraged = false;
-                }
-            }
-            else
-            {
-                curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-                curentlyDragged = null;
-            }
-        }
+        //                 }
+        //                 else
+        //                 {
+        //                     curentlyDragged = null;
+        //                     Tile.IsPieceDraged = false;
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+        //                 curentlyDragged = null;
+        //             }
+        //         }
 
-        if (curentlyDragged != null)
-        {
-            Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = 10;
-            curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
-        }
+        //         if (curentlyDragged != null)
+        //         {
+        //             Vector3 mousePosition = Input.mousePosition;
+        //             mousePosition.z = 10;
+        //             curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
+        //         }
+        // #endif   
     }
 
     #region  VRIntegration
 
-    public void GrabPiece()
+    public void GrabPiece(InputAction.CallbackContext obj)
     {
-        cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(cameraRay, out hit))
+        if (rightRayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
         {
             Tile tile = hit.collider.GetComponent<Tile>();
             if (tile == null || chessPieces[tile.X, tile.Y] == null)
@@ -152,7 +163,7 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    public void LeftPiece()
+    public void LeftPiece(InputAction.CallbackContext obj)
     {
         if (curentlyDragged == null)
         {
@@ -160,9 +171,9 @@ public class Chessboard : MonoBehaviour
         }
 
         previousPosition = curentlyDragged.position;
-        cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(cameraRay, out hit))
+
+        if (rightRayInteractor.TryGetCurrent3DRaycastHit(out hit))
         {
             if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
             {
@@ -192,6 +203,7 @@ public class Chessboard : MonoBehaviour
             curentlyDragged = null;
         }
     }
+
 
     #endregion
     public Tile GetTile(int x, int y)

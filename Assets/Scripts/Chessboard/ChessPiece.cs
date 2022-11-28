@@ -31,7 +31,7 @@ public class ChessPiece : MonoBehaviour
         if (pieceRenderer == null)
         {
             pieceRenderer = GetComponentInChildren<MeshRenderer>();
-            pieceMaterial = pieceRenderer.material;
+            pieceMaterial = pieceRenderer.sharedMaterial;
         }
     }
 
