@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 using NaughtyAttributes;
 
 public enum TeamColor
@@ -125,6 +126,72 @@ public class Chessboard : MonoBehaviour
         }
     }
 
+    #region  VRIntegration
+
+    public void GrabPiece()
+    {
+        cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(cameraRay, out hit))
+        {
+            Tile tile = hit.collider.GetComponent<Tile>();
+            if (tile == null || chessPieces[tile.X, tile.Y] == null)
+            {
+                return;
+            }
+
+            if (true) // turn check
+            {
+                Tile.IsPieceDraged = true;
+                curentlyDragged = chessPieces[tile.X, tile.Y];
+                avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                HighlightAvaliableTiles();
+                tile.SetChessPiece(null);
+            }
+        }
+    }
+
+    public void LeftPiece()
+    {
+        if (curentlyDragged == null)
+        {
+            return;
+        }
+
+        previousPosition = curentlyDragged.position;
+        cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(cameraRay, out hit))
+        {
+            if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
+            {
+                curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                curentlyDragged = null;
+            }
+
+            bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
+            RemoveHighlightedTiles();
+            tile.SetChessPiece(curentlyDragged);
+            if (validMove == false)
+            {
+                curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                curentlyDragged = null;
+                Tile.IsPieceDraged = false;
+
+            }
+            else
+            {
+                curentlyDragged = null;
+                Tile.IsPieceDraged = false;
+            }
+        }
+        else
+        {
+            curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+            curentlyDragged = null;
+        }
+    }
+
+    #endregion
     public Tile GetTile(int x, int y)
     {
         if (x < 0 || x >= CHESSBOARD_SIZE_X || y < 0 || y >= CHESSBOARD_SIZE_Y)
