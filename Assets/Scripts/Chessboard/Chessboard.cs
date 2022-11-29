@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using NaughtyAttributes;
+using UnityEngine.SceneManagement;
 
 public enum TeamColor
 {
@@ -26,6 +27,8 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float deadSize = 0.25f;
     [SerializeField] private GameObject deathPlaceWhite = null;
     [SerializeField] private GameObject deathPlaceBlack = null;
+    [SerializeField] private XRRayInteractor rightRayInteractor;
+    [SerializeField] private XRDirectInteractor leftDirectInteractor;
 
     private Tile[,] tiles = new Tile[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
     private ChessPiece[,] chessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
@@ -38,9 +41,8 @@ public class Chessboard : MonoBehaviour
     private Ray cameraRay;
     public InputActionReference ActivationRayReference;
     public InputActionReference ActivationDirectReference;
-    [SerializeField] private XRRayInteractor rightRayInteractor;
-    [SerializeField] private XRDirectInteractor leftDirectInteractor;
     private bool isGrabbed = false;
+    private bool isWhiteTurn = false;
 
 
     private void Awake()
@@ -56,7 +58,9 @@ public class Chessboard : MonoBehaviour
                 tiles[x, y] = tile.GetComponent<Tile>().SetPosition(x, y);
             }
         }
+
         Instance = this;
+        isWhiteTurn = true;
     }
 
     private void Start()
@@ -85,7 +89,7 @@ public class Chessboard : MonoBehaviour
                 return;
             }
 
-            if (true) // turn check
+            if ((chessPieces[tile.X, tile.Y].team == TeamColor.White && isWhiteTurn == true) || (chessPieces[tile.X, tile.Y].team == TeamColor.Black && isWhiteTurn == false)) // turn check
             {
                 Tile.IsPieceDraged = true;
                 curentlyDragged = chessPieces[tile.X, tile.Y];
@@ -100,11 +104,13 @@ public class Chessboard : MonoBehaviour
     {
         if (isGrabbed == true)
         {
+            RemoveHighlightedTiles();
             return;
         }
 
         if (curentlyDragged == null)
         {
+            RemoveHighlightedTiles();
             return;
         }
 
@@ -152,7 +158,7 @@ public class Chessboard : MonoBehaviour
 
         Debug.Log("PieceGrabed " + _piece.position);
 
-        if (true) // turn check
+        if ((_piece.team == TeamColor.White && isWhiteTurn == true) || (_piece.team == TeamColor.Black && isWhiteTurn == false)) // turn check
         {
             Tile.IsPieceDraged = true;
             curentlyDragged = chessPieces[_piece.position.x, _piece.position.y];
@@ -168,6 +174,7 @@ public class Chessboard : MonoBehaviour
         if (curentlyDragged == null)
         {
             Debug.Log("PieceLeft curentlyDragged == null");
+            RemoveHighlightedTiles();
             return;
         }
 
@@ -331,12 +338,22 @@ public class Chessboard : MonoBehaviour
 
             if (enemyChessPiece.team == TeamColor.White)
             {
+                if (enemyChessPiece.type == ChessPieceType.King)
+                {
+                    CheckMate(TeamColor.Black);
+                }
+
                 whiteDead.Add(enemyChessPiece);
                 enemyChessPiece.SetScale(Vector3.one * deadSize);
                 enemyChessPiece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
             }
             else
             {
+                if (enemyChessPiece.type == ChessPieceType.King)
+                {
+                    CheckMate(TeamColor.White);
+                }
+
                 blackDead.Add(enemyChessPiece);
                 enemyChessPiece.SetScale(Vector3.one * deadSize);
                 enemyChessPiece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
@@ -345,6 +362,8 @@ public class Chessboard : MonoBehaviour
         }
         chessPieces[_x, _y] = _piece;
         chessPieces[_piece.position.x, _piece.position.y] = null;
+
+        isWhiteTurn = !isWhiteTurn;
 
         PositionSinglePiece(_x, _y);
 
@@ -375,6 +394,20 @@ public class Chessboard : MonoBehaviour
         {
             tiles[move.x, move.y].MakeUnavaliable();
         }
+    }
+
+    private void CheckMate(TeamColor _team)
+    {
+        if (_team == TeamColor.White)
+        {
+            Debug.Log("Black Wins");
+        }
+        else
+        {
+            Debug.Log("White Wins");
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     #endregion
 
