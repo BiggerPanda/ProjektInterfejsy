@@ -12,48 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae5a46bda3295124c99b0e6537ac7252, type: 3}
   m_Name: Wit
   m_EditorClassIdentifier: 
-  _clientAccessToken: 2ZONDF54IKG7Z2FP32DWYKAN3T53EA6I
-  _appInfo:
+  application:
+    witConfiguration: {fileID: 11400000}
     name: interfejsy_projekt
     id: 696916525059938
     lang: pl
     isPrivate: 0
     createdAt: 2022-11-29T13:51:43-0800
-    trainingStatus: 1
-    lastTrainDuration: 0
-    lastTrainedAt: 1969-12-31T16:00:00-0800
-    nextTrainAt: 1969-12-31T16:00:00-0800
-    intents: []
-    entities: []
-    traits: []
-    voices:
-    - name: Charlie
-      locale: en_US
-      gender: male
-      styles:
-      - default
-      - soft
-      - fast
-      - projected
-    - name: Cooper
-      locale: en_US
-      gender: male
-      styles:
-      - default
-      - soft
-      - formal
-      - fast
-      - projected
-    - name: Rebecca
-      locale: en_US
-      gender: female
-      styles:
-      - default
-      - soft
-      - formal
-      - fast
-      - projected
-  _configurationId: 
+  configId: 5fcf115aef20fa045a220efe0633435c
+  clientAccessToken: 2ZONDF54IKG7Z2FP32DWYKAN3T53EA6I
   timeoutMS: 10000
   endpointConfiguration:
     uriScheme: 
@@ -63,8 +30,220 @@ MonoBehaviour:
     speech: 
     message: 
     dictation: 
+  entities:
+  - witConfiguration: {fileID: 11400000}
+    id: 859672761854801
+    name: Pozycja
+    lookups:
+    - free-text
+    - keywords
+    roles:
+    - id: 2475846285903347
+      name: Pozycja
+    keywords:
+    - keyword: a1
+      synonyms:
+      - a1
+    - keyword: a2
+      synonyms:
+      - a2
+    - keyword: a3
+      synonyms:
+      - a3
+    - keyword: a4
+      synonyms:
+      - a4
+    - keyword: a5
+      synonyms:
+      - a5
+    - keyword: a6
+      synonyms:
+      - a6
+    - keyword: a7
+      synonyms:
+      - a7
+    - keyword: a8
+      synonyms:
+      - a8
+    - keyword: b1
+      synonyms:
+      - b1
+    - keyword: b2
+      synonyms:
+      - b2
+    - keyword: b3
+      synonyms:
+      - b3
+    - keyword: b4
+      synonyms:
+      - b4
+    - keyword: b5
+      synonyms:
+      - b5
+    - keyword: b6
+      synonyms:
+      - b6
+    - keyword: b7
+      synonyms:
+      - b7
+    - keyword: b8
+      synonyms:
+      - b8
+    - keyword: c1
+      synonyms:
+      - c1
+    - keyword: c2
+      synonyms:
+      - c2
+    - keyword: c3
+      synonyms:
+      - c3
+    - keyword: c4
+      synonyms:
+      - c4
+    - keyword: c5
+      synonyms:
+      - c5
+    - keyword: c6
+      synonyms:
+      - c6
+    - keyword: c7
+      synonyms:
+      - c7
+    - keyword: c8
+      synonyms:
+      - c8
+    - keyword: e1
+      synonyms:
+      - e1
+    - keyword: e2
+      synonyms:
+      - e2
+    - keyword: e3
+      synonyms:
+      - e3
+    - keyword: e4
+      synonyms:
+      - e4
+    - keyword: e5
+      synonyms:
+      - e5
+    - keyword: e6
+      synonyms:
+      - e6
+    - keyword: e7
+      synonyms:
+      - e7
+    - keyword: e8
+      synonyms:
+      - e8
+    - keyword: f1
+      synonyms:
+      - f1
+    - keyword: f2
+      synonyms:
+      - f2
+    - keyword: f3
+      synonyms:
+      - f3
+    - keyword: f4
+      synonyms:
+      - f4
+    - keyword: f5
+      synonyms:
+      - f5
+    - keyword: f6
+      synonyms:
+      - f6
+    - keyword: f7
+      synonyms:
+      - f7
+    - keyword: f8
+      synonyms:
+      - f8
+    - keyword: g1
+      synonyms:
+      - g1
+    - keyword: g2
+      synonyms:
+      - g2
+    - keyword: g3
+      synonyms:
+      - g3
+    - keyword: g4
+      synonyms:
+      - g4
+    - keyword: g5
+      synonyms:
+      - g5
+    - keyword: g6
+      synonyms:
+      - g6
+    - keyword: g7
+      synonyms:
+      - g7
+    - keyword: g8
+      synonyms:
+      - g8
+    - keyword: h1
+      synonyms:
+      - h1
+    - keyword: h2
+      synonyms:
+      - h2
+    - keyword: h3
+      synonyms:
+      - h3
+    - keyword: h4
+      synonyms:
+      - h4
+    - keyword: h5
+      synonyms:
+      - h5
+    - keyword: h6
+      synonyms:
+      - h6
+    - keyword: h7
+      synonyms:
+      - h7
+    - keyword: h8
+      synonyms:
+      - h8
+  - witConfiguration: {fileID: 11400000}
+    id: 896534251705486
+    name: figura
+    lookups:
+    - free-text
+    - keywords
+    roles:
+    - id: 3376689525933027
+      name: figura
+    keywords:
+    - keyword: goniec
+      synonyms:
+      - goniec
+    - keyword: "ko\u0144"
+      synonyms:
+      - "ko\u0144"
+    - keyword: "kr\xF3l"
+      synonyms:
+      - "kr\xF3l"
+    - keyword: "kr\xF3lowa"
+      synonyms:
+      - "kr\xF3lowa"
+    - keyword: pion
+      synonyms:
+      - pion
+    - keyword: pionek
+      synonyms:
+      - pionek
+    - keyword: "wie\u017Ca"
+      synonyms:
+      - "wie\u017Ca"
+  intents: []
+  traits: []
   isDemoOnly: 0
   useConduit: 1
-  _manifestLocalPath: ConduitManifest-bd42c0b3-ee73-43ce-bec7-3a960d802c4e.json
-  excludedAssemblies: []
-  relaxedResolution: 0
+  manifestLocalPath: ConduitManifest-10ec74c6-b976-4616-81af-c41fe3c205c4.json
+  autoGenerateManifest: 0
+  openManifestOnGeneration: 0
