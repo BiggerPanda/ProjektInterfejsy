@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public enum ChessPieceType
 {
@@ -17,9 +18,11 @@ public class ChessPiece : MonoBehaviour
     public Vector2Int position = Vector2Int.zero;
     public ChessPieceType type = ChessPieceType.Pawn;
     public TeamColor team = TeamColor.White;
+    public bool IsGrabed = false;
 
     [SerializeField] protected Material whiteMaterial;
     [SerializeField] protected Material blackMaterial;
+
     private MeshRenderer pieceRenderer;
     private Material pieceMaterial;
     private Vector3 desiredPosition;
@@ -43,6 +46,11 @@ public class ChessPiece : MonoBehaviour
 
     private void Update()
     {
+        if (IsGrabed == true)
+        {
+            return;
+        }
+
         if (transform.localPosition != desiredPosition)
         {
             transform.localPosition = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * 10f);
@@ -100,5 +108,30 @@ public class ChessPiece : MonoBehaviour
         {
             transform.localScale = desiredScale;
         }
+    }
+
+    public virtual void OnGrab()
+    {
+        IsGrabed = true;
+        Chessboard.Instance.PieceGrabed(gameObject.GetComponent<ChessPiece>());
+    }
+
+    public virtual void OnRelease()
+    {
+        gameObject.transform.rotation = new Quaternion(0, 0, 0, 0);
+        Debug.DrawRay(transform.position, Vector3.down, Color.red, 5f);
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit _ray, 5f))
+        {
+            if (_ray.collider.TryGetComponent<Tile>(out Tile _tile))
+            {
+                Debug.Log("Tile found: " + _tile.name);
+                Chessboard.Instance.PieceLeft(_tile);
+            }
+            else
+            {
+                Chessboard.Instance.PieceLeft(null);
+            }
+        }
+        IsGrabed = false;
     }
 }

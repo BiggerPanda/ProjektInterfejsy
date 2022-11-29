@@ -67,6 +67,76 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rook
       objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3828847723779219519}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3828847723779219519}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnRelease
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnGrab
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChessPiece, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChessPiece, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6951e8dec4b8390239f4babd0715a4e3, type: 3}
 --- !u!4 &4828546928566692653 stripped
@@ -95,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
   type: 1
+  team: 0
   whiteMaterial: {fileID: 2100000, guid: d09888fb380864d7d820ffed5c260deb, type: 2}
   blackMaterial: {fileID: 2100000, guid: ce80d7520e4604c6faaad086dc1a7590, type: 2}
 --- !u!1001 &6568540519805891228

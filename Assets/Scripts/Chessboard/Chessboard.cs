@@ -36,9 +36,12 @@ public class Chessboard : MonoBehaviour
     private Vector2Int previousPosition = Vector2Int.zero;
     private RaycastHit hit;
     private Ray cameraRay;
-    public InputActionReference ActivationReference;
+    public InputActionReference ActivationRayReference;
+    public InputActionReference ActivationDirectReference;
     [SerializeField] private XRRayInteractor rightRayInteractor;
-    [SerializeField] private XRRayInteractor leftRayInteractor;
+    [SerializeField] private XRDirectInteractor leftDirectInteractor;
+    private bool isGrabbed = false;
+
 
     private void Awake()
     {
@@ -61,89 +64,19 @@ public class Chessboard : MonoBehaviour
         DrawBoard();
         SpawnAllPieces();
 
-        ActivationReference.action.performed += GrabPiece;
-        ActivationReference.action.canceled += LeftPiece;
-    }
-
-    private void Update()
-    {
-        // #if UNITY_EDITOR
-        //         if (Input.GetMouseButtonDown(0))
-        //         {
-        //             cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //             if (Physics.Raycast(cameraRay, out hit))
-        //             {
-        //                 Tile tile = hit.collider.GetComponent<Tile>();
-        //                 if (tile == null || chessPieces[tile.X, tile.Y] == null)
-        //                 {
-        //                     return;
-        //                 }
-
-        //                 if (true) // turn check
-        //                 {
-        //                     Tile.IsPieceDraged = true;
-        //                     curentlyDragged = chessPieces[tile.X, tile.Y];
-        //                     avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
-        //                     HighlightAvaliableTiles();
-        //                     tile.SetChessPiece(null);
-        //                 }
-        //             }
-        //         }
-
-        //         if (Input.GetMouseButtonUp(0))
-        //         {
-        //             if (curentlyDragged == null)
-        //             {
-        //                 return;
-        //             }
-
-        //             previousPosition = curentlyDragged.position;
-        //             cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //             if (Physics.Raycast(cameraRay, out hit))
-        //             {
-        //                 if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
-        //                 {
-        //                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-        //                     curentlyDragged = null;
-        //                 }
-
-        //                 bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
-        //                 RemoveHighlightedTiles();
-        //                 tile.SetChessPiece(curentlyDragged);
-        //                 if (validMove == false)
-        //                 {
-        //                     curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-        //                     curentlyDragged = null;
-        //                     Tile.IsPieceDraged = false;
-
-        //                 }
-        //                 else
-        //                 {
-        //                     curentlyDragged = null;
-        //                     Tile.IsPieceDraged = false;
-        //                 }
-        //             }
-        //             else
-        //             {
-        //                 curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
-        //                 curentlyDragged = null;
-        //             }
-        //         }
-
-        //         if (curentlyDragged != null)
-        //         {
-        //             Vector3 mousePosition = Input.mousePosition;
-        //             mousePosition.z = 10;
-        //             curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
-        //         }
-        // #endif   
+        ActivationRayReference.action.performed += GrabPieceByRay;
+        ActivationRayReference.action.canceled += LeftPieceByRay;
     }
 
     #region  VRIntegration
 
-    public void GrabPiece(InputAction.CallbackContext obj)
+    public void GrabPieceByRay(InputAction.CallbackContext obj)
     {
+        if (isGrabbed == true)
+        {
+            return;
+        }
+
         if (rightRayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit))
         {
             Tile tile = hit.collider.GetComponent<Tile>();
@@ -163,8 +96,13 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    public void LeftPiece(InputAction.CallbackContext obj)
+    public void LeftPieceByRay(InputAction.CallbackContext obj)
     {
+        if (isGrabbed == true)
+        {
+            return;
+        }
+
         if (curentlyDragged == null)
         {
             return;
@@ -204,6 +142,59 @@ public class Chessboard : MonoBehaviour
         }
     }
 
+    public void PieceGrabed(ChessPiece _piece)
+    {
+        isGrabbed = true;
+        if (_piece == null)
+        {
+            return;
+        }
+
+        Debug.Log("PieceGrabed " + _piece.position);
+
+        if (true) // turn check
+        {
+            Tile.IsPieceDraged = true;
+            curentlyDragged = chessPieces[_piece.position.x, _piece.position.y];
+
+            avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+            HighlightAvaliableTiles();
+            tiles[curentlyDragged.position.x, curentlyDragged.position.y].SetChessPiece(null);
+        }
+    }
+
+    public void PieceLeft(Tile _tile)
+    {
+        if (curentlyDragged == null)
+        {
+            Debug.Log("PieceLeft curentlyDragged == null");
+            return;
+        }
+
+        if (_tile == null)
+        {
+            curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+            curentlyDragged = null;
+        }
+
+        bool validMove = MoveTo(ref curentlyDragged, _tile.X, _tile.Y);
+        RemoveHighlightedTiles();
+        _tile.SetChessPiece(curentlyDragged);
+        if (validMove == false)
+        {
+            curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+            curentlyDragged = null;
+            Tile.IsPieceDraged = false;
+
+        }
+        else
+        {
+            curentlyDragged = null;
+            Tile.IsPieceDraged = false;
+        }
+
+        isGrabbed = false;
+    }
 
     #endregion
     public Tile GetTile(int x, int y)
