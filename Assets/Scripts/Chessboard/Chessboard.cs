@@ -21,8 +21,8 @@ public class Chessboard : MonoBehaviour
     public const int CHESSBOARD_SIZE_Y = 8;
 
     public static Chessboard Instance { get; private set; }
+    public bool IsWhiteTurn = false;
 
-    [ReadOnly] public string Notation;
     [SerializeField] private float tileSize = 1.3f;
     [SerializeField] private GameObject tileGameObject;
     [SerializeField] private ChessModelData chessData;
@@ -44,15 +44,13 @@ public class Chessboard : MonoBehaviour
     public InputActionReference ActivationRayReference;
     public InputActionReference ActivationDirectReference;
     private bool isGrabbed = false;
-    private bool isWhiteTurn = false;
-    //pgn variables
-    [ReadOnly] public string PGN = "";
-    private string pgnMove = "";
-    private int move = 1;
+    private NotationWriter notationWriter = null;
+    public ChessPiece[,] ChessPieces => chessPieces;
 
 
     private void Awake()
     {
+        notationWriter = new NotationWriter();
         for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
         {
             for (int y = 0; y < CHESSBOARD_SIZE_Y; y++)
@@ -66,7 +64,7 @@ public class Chessboard : MonoBehaviour
         }
 
         Instance = this;
-        isWhiteTurn = true;
+        IsWhiteTurn = true;
     }
 
     private void Start()
@@ -353,7 +351,7 @@ public class Chessboard : MonoBehaviour
         PositionAllPieces();
     }
 
-    private ChessPiece SpanwSinglePiece(ChessPieceType _pieceType, TeamColor _team)
+    public ChessPiece SpanwSinglePiece(ChessPieceType _pieceType, TeamColor _team)
     {
         ChessPiece piece = Instantiate(chessData.GetModel(_pieceType), transform).GetComponent<ChessPiece>();
         piece.SetTeam(_team);
@@ -452,8 +450,8 @@ public class Chessboard : MonoBehaviour
         }
         chessPieces[_x, _y] = _piece;
         chessPieces[_piece.position.x, _piece.position.y] = null;
-        writePGNNotation(_x, _y);
-        isWhiteTurn = !isWhiteTurn;
+        notationWriter.writePGNNotation(_x, _y, _piece);
+        IsWhiteTurn = !IsWhiteTurn;
 
         PositionSinglePiece(_x, _y);
 
@@ -501,231 +499,4 @@ public class Chessboard : MonoBehaviour
     }
     #endregion
 
-    #region  translateToNotation
-
-    private string TranslateToNotation(ref ChessPiece[,] _board)
-    {
-        Notation = "";
-        int emptySpots;
-        for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
-        {
-            emptySpots = 0;
-            for (int y = 0; y < CHESSBOARD_SIZE_Y; y++)
-            {
-                if (_board[y, x] != null)
-                {
-                    if (emptySpots > 0)
-                    {
-                        Notation += emptySpots.ToString();
-                        emptySpots = 0;
-                    }
-                    if (_board[y, x].team == TeamColor.White)
-                    {
-                        Notation += CheckType(_board[y, x]).ToUpper();
-                    }
-                    else
-                    {
-                        Notation += CheckType(_board[y, x]).ToLower();
-                    }
-
-                    if (y == CHESSBOARD_SIZE_Y - 1)
-                    {
-                        Notation += "/";
-
-                    }
-                }
-                else
-                {
-                    emptySpots += 1;
-                    if (emptySpots == CHESSBOARD_SIZE_X)
-                    {
-                        Notation += emptySpots.ToString();
-                        emptySpots = 0;
-                    }
-
-                    if (y == CHESSBOARD_SIZE_Y - 1)
-                    {
-                        if (emptySpots > 0)
-                        {
-                            Notation += emptySpots.ToString();
-                        }
-                        Notation += "/";
-
-                    }
-                }
-            }
-        }
-        Debug.Log(Notation);
-        return null;
-    }
-
-    [Button("Check Notation")]
-    private void CheckNotatnio()
-    {
-        TranslateToNotation(ref chessPieces);
-    }
-
-    [Button("Check Board")]
-    private void CreateFromNotation()
-    {
-        string testNotatnion = "RNBQKBNR/PPP1PPPP/8/3P4/8/8/pppppppp/rnbqkbnr/";
-        ChessPiece[,] _board = TranslateFromNotation(testNotatnion);
-        PrintBoard(ref _board);
-    }
-
-    private ChessPiece[,] TranslateFromNotation(string _notation)
-    {
-        ChessPiece[,] _board = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
-
-        int row = 0, collumn = 0;
-
-        foreach (char x in _notation)
-        {
-            Debug.LogWarning(x);
-            if (x == '/')
-            {
-                row++;
-                collumn = 0;
-            }
-            else
-            {
-                if (Char.IsDigit(x))
-                {
-                    collumn += int.Parse(x.ToString()) - 1;
-                }
-                else
-                {
-                    Debug.Log(row + " " + collumn);
-                    _board[row, collumn] = CheckType(x.ToString());
-                    _board[row, collumn].SetPosition(row, collumn);
-                    collumn++;
-                }
-            }
-        }
-        return _board;
-    }
-
-    private string CheckType(ChessPiece _piece)
-    {
-        string answer = "";
-        switch (_piece.type)
-        {
-            case ChessPieceType.Pawn:
-                answer = "P";
-                break;
-            case ChessPieceType.Rook:
-                answer = "R";
-                break;
-            case ChessPieceType.Knight:
-                answer = "N";
-                break;
-            case ChessPieceType.Bishop:
-                answer = "B";
-                break;
-            case ChessPieceType.Queen:
-                answer = "Q";
-                break;
-            case ChessPieceType.King:
-                answer = "K";
-                break;
-            default:
-                break;
-        }
-        return answer;
-    }
-
-    private ChessPiece CheckType(string _type)
-    {
-        ChessPiece piece = null;
-        switch (_type)
-        {
-            case "P":
-                piece = SpanwSinglePiece(ChessPieceType.Pawn, TeamColor.White);
-                break;
-            case "R":
-                piece = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.White);
-                break;
-            case "N":
-                piece = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.White);
-                break;
-            case "B":
-                piece = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.White);
-                break;
-            case "Q":
-                piece = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.White);
-                break;
-            case "K":
-                piece = SpanwSinglePiece(ChessPieceType.King, TeamColor.White);
-                break;
-            case "p":
-                piece = SpanwSinglePiece(ChessPieceType.Pawn, TeamColor.Black);
-                break;
-            case "r":
-                piece = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.Black);
-                break;
-            case "n":
-                piece = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.Black);
-                break;
-            case "b":
-                piece = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.Black);
-                break;
-            case "q":
-                piece = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.Black);
-                break;
-            case "k":
-                piece = SpanwSinglePiece(ChessPieceType.King, TeamColor.Black);
-                break;
-            default:
-                break;
-        }
-        return piece;
-    }
-
-    public static string placeOnBoardToLetter(int place)
-    {
-        string letter = "";
-        switch (place)
-        {
-            case 0:
-                letter = "a";
-                break;
-            case 1:
-                letter = "b";
-                break;
-            case 2:
-                letter = "c";
-                break;
-            case 3:
-                letter = "d";
-                break;
-            case 4:
-                letter = "e";
-                break;
-            case 5:
-                letter = "f";
-                break;
-            case 6:
-                letter = "g";
-                break;
-            case 7:
-                letter = "h";
-                break;
-            default:
-                break;
-        }
-        return letter;
-    }
-    private void writePGNNotation(int x, int y)
-    {
-        string letterX = Chessboard.placeOnBoardToLetter(x);
-        string letterY = (y + 1).ToString();
-        pgnMove += letterX + letterY + " ";
-        if (isWhiteTurn == false)
-        {
-            PGN += move.ToString() + ". " + pgnMove;
-            move++;
-            pgnMove = "";
-        }
-    }
-    #endregion
 }
