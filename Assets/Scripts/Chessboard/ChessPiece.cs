@@ -1,3 +1,5 @@
+#define Testing
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -112,12 +114,15 @@ public class ChessPiece : MonoBehaviour
 
     public virtual void OnGrab()
     {
+#if !Testing
         IsGrabed = true;
         Chessboard.Instance.PieceGrabed(gameObject.GetComponent<ChessPiece>());
+#endif
     }
 
     public virtual void OnRelease()
     {
+#if !Testing
         gameObject.transform.rotation = new Quaternion(0, 0, 0, 0);
         Debug.DrawRay(transform.position, Vector3.down, Color.red, 5f);
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit _ray, 5f))
@@ -133,5 +138,6 @@ public class ChessPiece : MonoBehaviour
             }
         }
         IsGrabed = false;
+#endif
     }
 }

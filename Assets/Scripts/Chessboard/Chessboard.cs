@@ -1,3 +1,5 @@
+#define Testing 
+
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -43,6 +45,10 @@ public class Chessboard : MonoBehaviour
     public InputActionReference ActivationDirectReference;
     private bool isGrabbed = false;
     private bool isWhiteTurn = false;
+    //pgn variables
+    [ReadOnly] public string PGN = "";
+    private string pgnMove = "";
+    private int move = 1;
 
 
     private void Awake()
@@ -67,15 +73,92 @@ public class Chessboard : MonoBehaviour
     {
         DrawBoard();
         SpawnAllPieces();
-
+#if !Testing
         ActivationRayReference.action.performed += GrabPieceByRay;
         ActivationRayReference.action.canceled += LeftPieceByRay;
+#endif
+    }
+
+    private void Update()
+    {
+#if Testing
+        if (Input.GetMouseButtonDown(0))
+        {
+            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(cameraRay, out hit))
+            {
+                Tile tile = hit.collider.GetComponent<Tile>();
+                if (tile == null || chessPieces[tile.X, tile.Y] == null)
+                {
+                    return;
+                }
+
+                if (true) // turn check
+                {
+                    Tile.IsPieceDraged = true;
+                    curentlyDragged = chessPieces[tile.X, tile.Y];
+                    avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                    HighlightAvaliableTiles();
+                    tile.SetChessPiece(null);
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (curentlyDragged == null)
+            {
+                return;
+            }
+
+            previousPosition = curentlyDragged.position;
+            cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(cameraRay, out hit))
+            {
+                if (hit.collider.TryGetComponent<Tile>(out Tile tile) == false)
+                {
+                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                    curentlyDragged = null;
+                }
+
+                bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
+                RemoveHighlightedTiles();
+                tile.SetChessPiece(curentlyDragged);
+                if (validMove == false)
+                {
+                    curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                    curentlyDragged = null;
+                    Tile.IsPieceDraged = false;
+
+                }
+                else
+                {
+                    curentlyDragged = null;
+                    Tile.IsPieceDraged = false;
+                }
+            }
+            else
+            {
+                curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+                curentlyDragged = null;
+            }
+        }
+
+        if (curentlyDragged != null)
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = 10;
+            curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
+        }
+#endif
     }
 
     #region  VRIntegration
 
     public void GrabPieceByRay(InputAction.CallbackContext obj)
     {
+#if !Testing
         if (isGrabbed == true)
         {
             return;
@@ -98,10 +181,12 @@ public class Chessboard : MonoBehaviour
                 tile.SetChessPiece(null);
             }
         }
+#endif
     }
 
     public void LeftPieceByRay(InputAction.CallbackContext obj)
     {
+#if !Testing
         if (isGrabbed == true)
         {
             RemoveHighlightedTiles();
@@ -146,10 +231,12 @@ public class Chessboard : MonoBehaviour
             curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
             curentlyDragged = null;
         }
+#endif
     }
 
     public void PieceGrabed(ChessPiece _piece)
     {
+#if !Testing
         isGrabbed = true;
         if (_piece == null)
         {
@@ -167,10 +254,12 @@ public class Chessboard : MonoBehaviour
             HighlightAvaliableTiles();
             tiles[curentlyDragged.position.x, curentlyDragged.position.y].SetChessPiece(null);
         }
+#endif
     }
 
     public void PieceLeft(Tile _tile)
     {
+#if !Testing
         if (curentlyDragged == null)
         {
             Debug.Log("PieceLeft curentlyDragged == null");
@@ -201,6 +290,7 @@ public class Chessboard : MonoBehaviour
         }
 
         isGrabbed = false;
+#endif
     }
 
     #endregion
@@ -362,7 +452,7 @@ public class Chessboard : MonoBehaviour
         }
         chessPieces[_x, _y] = _piece;
         chessPieces[_piece.position.x, _piece.position.y] = null;
-
+        writePGNNotation(_x, _y);
         isWhiteTurn = !isWhiteTurn;
 
         PositionSinglePiece(_x, _y);
@@ -589,6 +679,53 @@ public class Chessboard : MonoBehaviour
                 break;
         }
         return piece;
+    }
+
+    public static string placeOnBoardToLetter(int place)
+    {
+        string letter = "";
+        switch (place)
+        {
+            case 0:
+                letter = "a";
+                break;
+            case 1:
+                letter = "b";
+                break;
+            case 2:
+                letter = "c";
+                break;
+            case 3:
+                letter = "d";
+                break;
+            case 4:
+                letter = "e";
+                break;
+            case 5:
+                letter = "f";
+                break;
+            case 6:
+                letter = "g";
+                break;
+            case 7:
+                letter = "h";
+                break;
+            default:
+                break;
+        }
+        return letter;
+    }
+    private void writePGNNotation(int x, int y)
+    {
+        string letterX = Chessboard.placeOnBoardToLetter(x);
+        string letterY = (y + 1).ToString();
+        pgnMove += letterX + letterY + " ";
+        if (isWhiteTurn == false)
+        {
+            PGN += move.ToString() + ". " + pgnMove;
+            move++;
+            pgnMove = "";
+        }
     }
     #endregion
 }
