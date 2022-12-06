@@ -27,6 +27,7 @@ public class ChessPiece : MonoBehaviour
     private Material pieceMaterial;
     private Vector3 desiredPosition;
     private Vector3 desiredScale = Vector3.one;
+    private Collider objectCollider = null;
     protected List<Vector2Int> avaliableMoves;
 
     private void OnValidate()
@@ -42,6 +43,7 @@ public class ChessPiece : MonoBehaviour
     {
         pieceRenderer = GetComponentInChildren<MeshRenderer>();
         pieceMaterial = pieceRenderer.material;
+        objectCollider = GetComponent<Collider>();
     }
 
     private void Update()
@@ -113,6 +115,7 @@ public class ChessPiece : MonoBehaviour
     public virtual void OnGrab()
     {
         IsGrabed = true;
+        objectCollider.enabled = false;
         Chessboard.Instance.PieceGrabed(gameObject.GetComponent<ChessPiece>());
     }
 
@@ -132,6 +135,7 @@ public class ChessPiece : MonoBehaviour
                 Chessboard.Instance.PieceLeft(null);
             }
         }
+        objectCollider.enabled = true;
         IsGrabed = false;
     }
 }
