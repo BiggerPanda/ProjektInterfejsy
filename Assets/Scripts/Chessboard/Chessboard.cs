@@ -13,6 +13,14 @@ public enum TeamColor
     Black
 }
 
+public enum SpecialMove
+{
+    None,
+    EnPassant,
+    Castling,
+    Promotion
+}
+
 public class Chessboard : MonoBehaviour
 {
     public const int CHESSBOARD_SIZE_X = 8;
@@ -42,6 +50,8 @@ public class Chessboard : MonoBehaviour
     public InputActionReference ActivationRayReference;
     public InputActionReference ActivationDirectReference;
     private bool isGrabbed = false;
+    private SpecialMove specialMove = SpecialMove.None;
+    private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
     private bool isWhiteTurn = false;
 
 
@@ -364,8 +374,9 @@ public class Chessboard : MonoBehaviour
         chessPieces[_piece.position.x, _piece.position.y] = null;
 
         isWhiteTurn = !isWhiteTurn;
-
         PositionSinglePiece(_x, _y);
+
+        moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
 
         return true;
     }
