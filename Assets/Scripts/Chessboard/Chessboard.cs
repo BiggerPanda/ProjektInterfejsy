@@ -482,7 +482,55 @@ public class Chessboard : MonoBehaviour
 
         if (specialMove == SpecialMove.Castling)
         {
+            Vector2Int[] lastMove = moveList[moveList.Count - 1];
 
+            if (lastMove[1].y == 0)
+            {
+                if (lastMove[1].x == 6)
+                {
+                    ChessPiece rook = chessPieces[7, 0];
+                    chessPieces[5, 0] = rook;
+                    chessPieces[7, 0] = null;
+                    PositionSinglePiece(5, 0);
+                }
+                else if (lastMove[1].x == 2)
+                {
+                    ChessPiece rook = chessPieces[0, 0];
+                    chessPieces[3, 0] = rook;
+                    chessPieces[0, 0] = null;
+                    PositionSinglePiece(3, 0);
+                }
+            }
+            else if (lastMove[1].y == 7)
+            {
+                if (lastMove[1].x == 6)
+                {
+                    ChessPiece rook = chessPieces[7, 7];
+                    chessPieces[5, 7] = rook;
+                    chessPieces[7, 7] = null;
+                    PositionSinglePiece(5, 7);
+                }
+                else if (lastMove[1].x == 2)
+                {
+                    ChessPiece rook = chessPieces[0, 7];
+                    chessPieces[3, 7] = rook;
+                    chessPieces[0, 7] = null;
+                    PositionSinglePiece(3, 7);
+                }
+            }
+        }
+
+        if (specialMove == SpecialMove.Promotion)
+        {
+            Vector2Int[] lastMove = moveList[moveList.Count - 1];
+            ChessPiece pawn = chessPieces[lastMove[1].x, lastMove[1].y];
+            if (pawn.position.y == 0 || pawn.position.y == 7)
+            {
+                ChessPiece newPiece = SpanwSinglePiece(ChessPieceType.Queen, pawn.team);
+                Destroy(chessPieces[lastMove[1].x, lastMove[1].y].gameObject);
+                chessPieces[pawn.position.x, pawn.position.y] = newPiece;
+                PositionSinglePiece(lastMove[1].x, lastMove[1].y);
+            }
         }
     }
 

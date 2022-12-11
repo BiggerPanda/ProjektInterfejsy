@@ -17,7 +17,7 @@ public class Pawn : ChessPiece
 
         if (_board[position.x, position.y + direction] == null)
         {
-            if ((position.y == 1 || position.y == 6) && _board[position.x, position.y + direction * 2] == null)
+            if (((team == TeamColor.White && position.y == 1) || (team == TeamColor.Black && position.y == 6)) && _board[position.x, position.y + (direction * 2)] == null)
             {
                 avaliableMoves.Add(new Vector2Int(position.x, position.y + (direction * 2)));
             }
@@ -45,6 +45,10 @@ public class Pawn : ChessPiece
 
     public override SpecialMove GetSpecialMoves(ref ChessPiece[,] _board, ref List<Vector2Int[]> _moveList, ref List<Vector2Int> _avaliableMoves)
     {
+
+        if ((team == TeamColor.White && position.y == 6) || team == TeamColor.Black && position.y == 1)
+            return SpecialMove.Promotion;
+
         if (_moveList.Count > 0)
         {
             Vector2Int[] _lastMove = _moveList[_moveList.Count - 1];
