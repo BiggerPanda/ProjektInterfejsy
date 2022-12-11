@@ -140,6 +140,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pawn
       objectReference: {fileID: 0}
+    - target: {fileID: 3996962026774686993, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_Mass
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996962026774686993, guid: 6951e8dec4b8390239f4babd0715a4e3,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6175038671872341670, guid: 6951e8dec4b8390239f4babd0715a4e3,
         type: 3}
       propertyPath: m_SelectExited.m_PersistentCalls.m_Calls.Array.size
@@ -233,6 +243,7 @@ MonoBehaviour:
   position: {x: 0, y: 0}
   type: 0
   team: 0
+  IsGrabed: 0
   whiteMaterial: {fileID: 2100000, guid: d09888fb380864d7d820ffed5c260deb, type: 2}
   blackMaterial: {fileID: 2100000, guid: ce80d7520e4604c6faaad086dc1a7590, type: 2}
 --- !u!4 &2077402523110814210 stripped

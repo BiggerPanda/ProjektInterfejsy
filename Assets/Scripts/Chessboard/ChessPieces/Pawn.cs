@@ -42,4 +42,39 @@ public class Pawn : ChessPiece
 
         return avaliableMoves;
     }
+
+    public override SpecialMove GetSpecialMoves(ref ChessPiece[,] _board, ref List<Vector2Int[]> _moveList, ref List<Vector2Int> _avaliableMoves)
+    {
+        if (_moveList.Count > 0)
+        {
+            Vector2Int[] _lastMove = _moveList[_moveList.Count - 1];
+
+            if (_board[_lastMove[1].x, _lastMove[1].y].type != ChessPieceType.Pawn)
+            {
+                return SpecialMove.None;
+            }
+
+            if (_board[_lastMove[1].x, _lastMove[1].y].team != team)
+            {
+                if (Mathf.Abs(_lastMove[0].y - _lastMove[1].y) == 2)
+                {
+                    if (_lastMove[1].y == position.y)
+                    {
+                        if (_lastMove[1].x == position.x + 1)
+                        {
+                            avaliableMoves.Add(new Vector2Int(position.x + 1, position.y + ((team == TeamColor.White) ? 1 : -1)));
+                            return SpecialMove.EnPassant;
+                        }
+
+                        if (_lastMove[1].x == position.x - 1)
+                        {
+                            avaliableMoves.Add(new Vector2Int(position.x - 1, position.y + ((team == TeamColor.White) ? 1 : -1)));
+                            return SpecialMove.EnPassant;
+                        }
+                    }
+                }
+            }
+        }
+        return SpecialMove.None;
+    }
 }

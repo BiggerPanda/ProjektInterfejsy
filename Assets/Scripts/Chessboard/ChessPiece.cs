@@ -46,6 +46,10 @@ public class ChessPiece : MonoBehaviour
         pieceRenderer = GetComponentInChildren<MeshRenderer>();
         pieceMaterial = pieceRenderer.material;
         objectCollider = GetComponent<Collider>();
+#if Testing
+        objectCollider.enabled = false;
+        GetComponent<Rigidbody>().useGravity = false;
+#endif
     }
 
     private void Update()
@@ -77,6 +81,11 @@ public class ChessPiece : MonoBehaviour
 
 
         return avaliableMoves;
+    }
+
+    public virtual SpecialMove GetSpecialMoves(ref ChessPiece[,] _board, ref List<Vector2Int[]> _moveList, ref List<Vector2Int> _avaliableMoves)
+    {
+        return SpecialMove.None;
     }
 
     public virtual void SetTeam(TeamColor _team)

@@ -29,7 +29,7 @@ public class Chessboard : MonoBehaviour
     public const int CHESSBOARD_SIZE_Y = 8;
 
     public static Chessboard Instance { get; private set; }
-    public bool IsWhiteTurn = false;
+    public bool IsWhiteTurn => isWhiteTurn;
 
     [SerializeField] private float tileSize = 1.3f;
     [SerializeField] private GameObject tileGameObject;
@@ -75,7 +75,7 @@ public class Chessboard : MonoBehaviour
         }
 
         Instance = this;
-        IsWhiteTurn = true;
+        isWhiteTurn = true;
     }
 
     private void Start()
@@ -102,11 +102,12 @@ public class Chessboard : MonoBehaviour
                     return;
                 }
 
-                if (true) // turn check
+                if ((chessPieces[tile.X, tile.Y].team == TeamColor.White && isWhiteTurn == true) || (chessPieces[tile.X, tile.Y].team == TeamColor.Black && isWhiteTurn == false)) // turn check
                 {
                     Tile.IsPieceDraged = true;
                     curentlyDragged = chessPieces[tile.X, tile.Y];
                     avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                    specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
                     HighlightAvaliableTiles();
                     tile.SetChessPiece(null);
                 }
@@ -186,6 +187,7 @@ public class Chessboard : MonoBehaviour
                 Tile.IsPieceDraged = true;
                 curentlyDragged = chessPieces[tile.X, tile.Y];
                 avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
                 HighlightAvaliableTiles();
                 tile.SetChessPiece(null);
             }
@@ -260,6 +262,7 @@ public class Chessboard : MonoBehaviour
             curentlyDragged = chessPieces[_piece.position.x, _piece.position.y];
 
             avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+            specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
             HighlightAvaliableTiles();
             tiles[curentlyDragged.position.x, curentlyDragged.position.y].SetChessPiece(null);
         }
@@ -435,40 +438,78 @@ public class Chessboard : MonoBehaviour
 
             ChessPiece enemyChessPiece = chessPieces[_x, _y];
 
-            if (enemyChessPiece.team == TeamColor.White)
-            {
-                if (enemyChessPiece.type == ChessPieceType.King)
-                {
-                    CheckMate(TeamColor.Black);
-                }
-
-                whiteDead.Add(enemyChessPiece);
-                enemyChessPiece.SetScale(Vector3.one * deadSize);
-                enemyChessPiece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
-            }
-            else
-            {
-                if (enemyChessPiece.type == ChessPieceType.King)
-                {
-                    CheckMate(TeamColor.White);
-                }
-
-                blackDead.Add(enemyChessPiece);
-                enemyChessPiece.SetScale(Vector3.one * deadSize);
-                enemyChessPiece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
-
-            }
+            KillPiece(enemyChessPiece);
         }
         chessPieces[_x, _y] = _piece;
         chessPieces[_piece.position.x, _piece.position.y] = null;
         notationWriter.writePGNNotation(_x, _y, _piece);
-        IsWhiteTurn = !IsWhiteTurn;
+        isWhiteTurn = !isWhiteTurn;
 
         PositionSinglePiece(_x, _y);
 
         moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
+        Debug.Log(specialMove);
+
+        ProcessSpecialMove();
 
         return true;
+    }
+
+    private void ProcessSpecialMove()
+    {
+        if (specialMove == SpecialMove.None)
+        {
+            return;
+        }
+
+        if (specialMove == SpecialMove.EnPassant)
+        {
+            Vector2Int[] _newMove = moveList[moveList.Count - 1];
+            Vector2Int[] _targetPawnPosition = moveList[moveList.Count - 2];
+            ChessPiece _myPawn = chessPieces[_newMove[1].x, _newMove[1].y];
+            ChessPiece _enemyPawn = chessPieces[_targetPawnPosition[1].x, _targetPawnPosition[1].y];
+
+            if (_myPawn.position.x == _enemyPawn.position.x)
+            {
+                if (_myPawn.position.y == _enemyPawn.position.y - 1 || _myPawn.position.y == _enemyPawn.position.y + 1)
+                {
+                    KillPiece(_enemyPawn);
+                    chessPieces[_enemyPawn.position.x, _enemyPawn.position.y] = null;
+                    specialMove = SpecialMove.None;
+                }
+            }
+        }
+
+        if (specialMove == SpecialMove.Castling)
+        {
+
+        }
+    }
+
+    private void KillPiece(ChessPiece _piece)
+    {
+        if (_piece.team == TeamColor.White)
+        {
+            if (_piece.type == ChessPieceType.King)
+            {
+                CheckMate(TeamColor.Black);
+            }
+
+            whiteDead.Add(_piece);
+            _piece.SetScale(Vector3.one * deadSize);
+            _piece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
+        }
+        else
+        {
+            if (_piece.type == ChessPieceType.King)
+            {
+                CheckMate(TeamColor.White);
+            }
+
+            blackDead.Add(_piece);
+            _piece.SetScale(Vector3.one * deadSize);
+            _piece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
+        }
     }
 
     private void HighlightAvaliableTiles()
