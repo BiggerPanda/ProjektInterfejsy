@@ -56,6 +56,9 @@ public class Chessboard : MonoBehaviour
     private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
     private bool isWhiteTurn = false;
     private NotationWriter notationWriter = null;
+    private ChessPiece WhiteKingRef = null;
+    private ChessPiece BlackKingRef = null;
+    List<Vector2Int> movesToRemove = new List<Vector2Int>();
     public ChessPiece[,] ChessPieces => chessPieces;
 
 
@@ -108,6 +111,7 @@ public class Chessboard : MonoBehaviour
                     curentlyDragged = chessPieces[tile.X, tile.Y];
                     avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
                     specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
+                    PreventCheck();
                     HighlightAvaliableTiles();
                     tile.SetChessPiece(null);
                 }
@@ -188,6 +192,7 @@ public class Chessboard : MonoBehaviour
                 curentlyDragged = chessPieces[tile.X, tile.Y];
                 avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
                 specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
+                PreventCheck();
                 HighlightAvaliableTiles();
                 tile.SetChessPiece(null);
             }
@@ -263,6 +268,7 @@ public class Chessboard : MonoBehaviour
 
             avaliableMoves = curentlyDragged.GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
             specialMove = curentlyDragged.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
+            PreventCheck();
             HighlightAvaliableTiles();
             tiles[curentlyDragged.position.x, curentlyDragged.position.y].SetChessPiece(null);
         }
@@ -339,6 +345,7 @@ public class Chessboard : MonoBehaviour
         chessPieces[2, 0] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.White);
         chessPieces[3, 0] = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.White);
         chessPieces[4, 0] = SpanwSinglePiece(ChessPieceType.King, TeamColor.White);
+        WhiteKingRef = chessPieces[4, 0];
         chessPieces[5, 0] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.White);
         chessPieces[6, 0] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.White);
         chessPieces[7, 0] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.White);
@@ -353,6 +360,7 @@ public class Chessboard : MonoBehaviour
         chessPieces[2, 7] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.Black);
         chessPieces[3, 7] = SpanwSinglePiece(ChessPieceType.Queen, TeamColor.Black);
         chessPieces[4, 7] = SpanwSinglePiece(ChessPieceType.King, TeamColor.Black);
+        BlackKingRef = chessPieces[4, 7];
         chessPieces[5, 7] = SpanwSinglePiece(ChessPieceType.Bishop, TeamColor.Black);
         chessPieces[6, 7] = SpanwSinglePiece(ChessPieceType.Knight, TeamColor.Black);
         chessPieces[7, 7] = SpanwSinglePiece(ChessPieceType.Rook, TeamColor.Black);
@@ -448,13 +456,13 @@ public class Chessboard : MonoBehaviour
         PositionSinglePiece(_x, _y);
 
         moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
-        Debug.Log(specialMove);
 
         ProcessSpecialMove();
 
         return true;
     }
 
+    #region SpecialMoves
     private void ProcessSpecialMove()
     {
         if (specialMove == SpecialMove.None)
@@ -534,6 +542,86 @@ public class Chessboard : MonoBehaviour
         }
     }
 
+    private void PreventCheck()
+    {
+        if (curentlyDragged != null)
+        {
+            if (curentlyDragged.team == TeamColor.White)
+            {
+                SimulateMoveForSinglePiece(curentlyDragged, ref avaliableMoves, WhiteKingRef);
+            }
+            else
+            {
+                SimulateMoveForSinglePiece(curentlyDragged, ref avaliableMoves, BlackKingRef);
+            }
+        }
+    }
+
+    private void SimulateMoveForSinglePiece(ChessPiece dragged, ref List<Vector2Int> moves, ChessPiece king)
+    {
+        movesToRemove.Clear();
+        Vector2Int dragedRealPosition = dragged.position;
+        Vector2Int kingSimPosition = king.position;
+        ChessPiece[,] tempChessPieces = new ChessPiece[CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y];
+        List<ChessPiece> tempAttackChessPiece = new List<ChessPiece>();
+        for (int i = 0; i < moves.Count; i++)
+        {
+            if (dragged.type == ChessPieceType.King)
+            {
+                kingSimPosition = moves[i];
+            }
+
+            for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
+            {
+                for (int y = 0; y < CHESSBOARD_SIZE_Y; y++)
+                {
+                    if (chessPieces[x, y] != null)
+                    {
+                        tempChessPieces[x, y] = chessPieces[x, y];
+                        if (tempChessPieces[x, y].team != dragged.team)
+                        {
+                            tempAttackChessPiece.Add(tempChessPieces[x, y]);
+                        }
+                    }
+                }
+            }
+
+            tempChessPieces[dragged.position.x, dragged.position.y] = null;
+            dragged.position = moves[i];
+            tempChessPieces[moves[i].x, moves[i].y] = dragged;
+            Vector2Int simulatedPosition = moves[i];
+
+            ChessPiece dead = tempAttackChessPiece.Find(x => x.position == simulatedPosition);
+
+            if (dead != null)
+            {
+                tempAttackChessPiece.Remove(dead);
+            }
+
+            List<Vector2Int> simulatedMoves = new List<Vector2Int>();
+            for (int x = 0; x < tempAttackChessPiece.Count; x++)
+            {
+                List<Vector2Int> pieceMoves = tempAttackChessPiece[x].GetAvaliableMoves(ref tempChessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                for (int y = 0; y < pieceMoves.Count; y++)
+                {
+                    simulatedMoves.Add(pieceMoves[y]);
+                }
+            }
+
+            if (ContainsValidMove(ref simulatedMoves, king.position))
+            {
+                movesToRemove.Add(moves[i]);
+            }
+
+            dragged.position = dragedRealPosition;
+        }
+
+        for (int i = 0; i < movesToRemove.Count; i++)
+        {
+            moves.Remove(movesToRemove[i]);
+        }
+    }
+    #endregion
     private void KillPiece(ChessPiece _piece)
     {
         if (_piece.team == TeamColor.White)
