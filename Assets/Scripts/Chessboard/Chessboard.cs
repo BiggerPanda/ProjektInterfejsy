@@ -458,6 +458,10 @@ public class Chessboard : MonoBehaviour
         moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
 
         ProcessSpecialMove();
+        if (CheckForCheckmate())
+        {
+            CheckMate(_piece.team);
+        }
 
         return true;
     }
@@ -621,6 +625,66 @@ public class Chessboard : MonoBehaviour
             moves.Remove(movesToRemove[i]);
         }
     }
+
+    private bool CheckForCheckmate()
+    {
+        Vector2Int[] lastMove = moveList[moveList.Count - 1];
+        TeamColor targetTeam = chessPieces[lastMove[1].x, lastMove[1].y].team == TeamColor.White ? TeamColor.Black : TeamColor.White;
+
+        List<ChessPiece> attackPieces = new List<ChessPiece>();
+        List<ChessPiece> defendPieces = new List<ChessPiece>();
+        ChessPiece king = null;
+
+        for (int x = 0; x < CHESSBOARD_SIZE_X; x++)
+        {
+            for (int y = 0; y < CHESSBOARD_SIZE_Y; y++)
+            {
+                if (chessPieces[x, y] != null)
+                {
+                    if (chessPieces[x, y].team != targetTeam)
+                    {
+                        attackPieces.Add(chessPieces[x, y]);
+
+                        if (chessPieces[x, y].type == ChessPieceType.King)
+                        {
+                            king = chessPieces[x, y];
+                        }
+                    }
+                    else
+                    {
+                        defendPieces.Add(chessPieces[x, y]);
+                    }
+                }
+            }
+        }
+
+        List<Vector2Int> currentAvaliableMoves = new List<Vector2Int>();
+        for (int x = 0; x < attackPieces.Count; x++)
+        {
+            List<Vector2Int> pieceMoves = attackPieces[x].GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+            for (int y = 0; y < pieceMoves.Count; y++)
+            {
+                currentAvaliableMoves.Add(pieceMoves[y]);
+            }
+        }
+
+        if (ContainsValidMove(ref currentAvaliableMoves, king.position))
+        {
+            for (int x = 0; x < attackPieces.Count; x++)
+            {
+                List<Vector2Int> defendingMoves = defendPieces[x].GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
+                SimulateMoveForSinglePiece(defendPieces[x], ref defendingMoves, king);
+                if (defendingMoves.Count > 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     #endregion
     private void KillPiece(ChessPiece _piece)
     {
