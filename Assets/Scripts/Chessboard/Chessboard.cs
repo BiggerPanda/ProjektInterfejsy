@@ -458,6 +458,7 @@ public class Chessboard : MonoBehaviour
         moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
 
         ProcessSpecialMove();
+
         if (CheckForCheckmate())
         {
             CheckMate(_piece.team);
@@ -641,9 +642,9 @@ public class Chessboard : MonoBehaviour
             {
                 if (chessPieces[x, y] != null)
                 {
-                    if (chessPieces[x, y].team != targetTeam)
+                    if (chessPieces[x, y].team == targetTeam)
                     {
-                        attackPieces.Add(chessPieces[x, y]);
+                        defendPieces.Add(chessPieces[x, y]);
 
                         if (chessPieces[x, y].type == ChessPieceType.King)
                         {
@@ -652,7 +653,7 @@ public class Chessboard : MonoBehaviour
                     }
                     else
                     {
-                        defendPieces.Add(chessPieces[x, y]);
+                        attackPieces.Add(chessPieces[x, y]);
                     }
                 }
             }
@@ -668,18 +669,28 @@ public class Chessboard : MonoBehaviour
             }
         }
 
+        Debug.Log(currentAvaliableMoves.Count);
+        Debug.Log(king.position);
+        Debug.Log(king.team);
+
         if (ContainsValidMove(ref currentAvaliableMoves, king.position))
         {
             for (int x = 0; x < attackPieces.Count; x++)
             {
                 List<Vector2Int> defendingMoves = defendPieces[x].GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
                 SimulateMoveForSinglePiece(defendPieces[x], ref defendingMoves, king);
-                if (defendingMoves.Count > 0)
+                Debug.Log(defendingMoves.Count);
+                if (defendingMoves.Count != 0)
                 {
                     return false;
                 }
             }
+
             return true;
+        }
+        else
+        {
+            Debug.Log("sth fucked up");
         }
 
         return false;
@@ -690,22 +701,12 @@ public class Chessboard : MonoBehaviour
     {
         if (_piece.team == TeamColor.White)
         {
-            if (_piece.type == ChessPieceType.King)
-            {
-                CheckMate(TeamColor.Black);
-            }
-
             whiteDead.Add(_piece);
             _piece.SetScale(Vector3.one * deadSize);
             _piece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
         }
         else
         {
-            if (_piece.type == ChessPieceType.King)
-            {
-                CheckMate(TeamColor.White);
-            }
-
             blackDead.Add(_piece);
             _piece.SetScale(Vector3.one * deadSize);
             _piece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
