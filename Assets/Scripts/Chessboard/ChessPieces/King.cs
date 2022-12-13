@@ -48,7 +48,7 @@ public class King : ChessPiece
                 {
                     if (_board[1, 0] == null && _board[2, 0] == null && _board[3, 0] == null)
                     {
-                        if (_board[0, 0].team == TeamColor.White && _board[0, 0].type == ChessPieceType.Rook)
+                        if (_board[0, 0] != null && _board[0, 0].team == TeamColor.White && _board[0, 0].type == ChessPieceType.Rook)
                         {
                             _avaliableMoves.Add(new Vector2Int(2, 0));
                             return SpecialMove.Castling;
@@ -60,7 +60,7 @@ public class King : ChessPiece
                 {
                     if (_board[5, 0] == null && _board[6, 0] == null)
                     {
-                        if (_board[7, 0].team == TeamColor.White && _board[7, 0].type == ChessPieceType.Rook)
+                        if (_board[7, 0] != null && _board[7, 0].team == TeamColor.White && _board[7, 0].type == ChessPieceType.Rook)
                         {
                             _avaliableMoves.Add(new Vector2Int(6, 0));
                             return SpecialMove.Castling;
@@ -75,7 +75,8 @@ public class King : ChessPiece
             {
                 if (_board[1, 7] == null && _board[2, 7] == null && _board[3, 7] == null)
                 {
-                    if (_board[0, 7].team == TeamColor.Black && _board[0, 7].type == ChessPieceType.Rook)
+
+                    if (_board[0, 7] != null && _board[0, 7].team == TeamColor.Black && _board[0, 7].type == ChessPieceType.Rook)
                     {
                         _avaliableMoves.Add(new Vector2Int(2, 7));
                         return SpecialMove.Castling;
@@ -87,7 +88,7 @@ public class King : ChessPiece
             {
                 if (_board[5, 7] == null && _board[6, 7] == null)
                 {
-                    if (_board[7, 7].team == TeamColor.White && _board[7, 7].type == ChessPieceType.Rook)
+                    if (_board[7, 7] != null && _board[7, 7].team == TeamColor.White && _board[7, 7].type == ChessPieceType.Rook)
                     {
                         _avaliableMoves.Add(new Vector2Int(6, 7));
                         return SpecialMove.Castling;
