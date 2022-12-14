@@ -29,6 +29,7 @@ public class Chessboard : MonoBehaviour
     public const int CHESSBOARD_SIZE_Y = 8;
 
     public static Chessboard Instance { get; private set; }
+    public event Action onPieceMove;
     public bool IsWhiteTurn => isWhiteTurn;
 
     [SerializeField] private float tileSize = 1.3f;
@@ -60,6 +61,8 @@ public class Chessboard : MonoBehaviour
     private ChessPiece BlackKingRef = null;
     List<Vector2Int> movesToRemove = new List<Vector2Int>();
     public ChessPiece[,] ChessPieces => chessPieces;
+    public int BlackDeadAmount => blackDead.Count;
+    public int WhiteDeadAmount => whiteDead.Count;
 
 
     private void Awake()
@@ -458,6 +461,8 @@ public class Chessboard : MonoBehaviour
         moveList.Add(new Vector2Int[] { previousPosition, new Vector2Int(_x, _y) });
 
         ProcessSpecialMove();
+
+        onPieceMove?.Invoke();
 
         if (CheckForCheckmate())
         {
