@@ -755,7 +755,7 @@ public class Chessboard : MonoBehaviour
             Debug.Log("White Wins");
         }
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneLoader.instance.LoadMenu();
     }
     #endregion
 
