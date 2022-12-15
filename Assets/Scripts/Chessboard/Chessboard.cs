@@ -227,6 +227,7 @@ public class Chessboard : MonoBehaviour
             {
                 curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
                 curentlyDragged = null;
+                return;
             }
 
             bool validMove = MoveTo(ref curentlyDragged, tile.X, tile.Y);
@@ -262,8 +263,6 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
-        Debug.Log("PieceGrabed " + _piece.position);
-
         if ((_piece.team == TeamColor.White && isWhiteTurn == true) || (_piece.team == TeamColor.Black && isWhiteTurn == false)) // turn check
         {
             Tile.IsPieceDraged = true;
@@ -292,6 +291,7 @@ public class Chessboard : MonoBehaviour
         {
             curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
             curentlyDragged = null;
+            return;
         }
 
         bool validMove = MoveTo(ref curentlyDragged, _tile.X, _tile.Y);
@@ -680,11 +680,10 @@ public class Chessboard : MonoBehaviour
 
         if (ContainsValidMove(ref currentAvaliableMoves, king.position))
         {
-            for (int x = 0; x < attackPieces.Count; x++)
+            for (int x = 0; x < defendPieces.Count; x++)
             {
                 List<Vector2Int> defendingMoves = defendPieces[x].GetAvaliableMoves(ref chessPieces, CHESSBOARD_SIZE_X, CHESSBOARD_SIZE_Y);
                 SimulateMoveForSinglePiece(defendPieces[x], ref defendingMoves, king);
-                Debug.Log(defendingMoves.Count);
                 if (defendingMoves.Count != 0)
                 {
                     return false;

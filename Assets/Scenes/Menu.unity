@@ -583,6 +583,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3127728407712097234, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3127728407712097236, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_Enabled
@@ -996,6 +1001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb62e297adc6183448ae9490ec04a297, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 28570385af81bd54caf80bc5d799aef9, type: 2}
 --- !u!4 &1325149699
 Transform:
   m_ObjectHideFlags: 0

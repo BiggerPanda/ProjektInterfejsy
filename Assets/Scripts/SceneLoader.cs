@@ -22,12 +22,12 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadScene(int scene)
     {
-        SceneManager.LoadScene(data.findScene(scene).sceneIndex);
+        SceneManager.LoadScene(data.findScene(scene).sceneIndex, LoadSceneMode.Single);
     }
 
     public void LoadMenu()
     {
-        SceneManager.LoadScene(data.findScene(0).sceneIndex);
+        SceneManager.LoadScene(data.findScene(0).sceneIndex, LoadSceneMode.Single);
     }
 
     public void QuitGame()

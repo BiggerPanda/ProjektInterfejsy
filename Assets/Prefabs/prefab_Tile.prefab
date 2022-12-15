@@ -222,13 +222,13 @@ GameObject:
   - component: {fileID: 4854569691408551071}
   - component: {fileID: 5322046452735841460}
   - component: {fileID: 5896396159543458195}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4854569691408551071
 Transform:
   m_ObjectHideFlags: 0

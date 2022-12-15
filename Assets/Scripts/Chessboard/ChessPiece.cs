@@ -135,13 +135,13 @@ public class ChessPiece : MonoBehaviour
     public virtual void OnRelease()
     {
 #if !Testing
+        objectCollider.enabled = true;
         gameObject.transform.rotation = new Quaternion(0, 0, 0, 0);
         Debug.DrawRay(transform.position, Vector3.down, Color.red, 5f);
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit _ray, 5f))
         {
             if (_ray.collider.TryGetComponent<Tile>(out Tile _tile))
             {
-                Debug.Log("Tile found: " + _tile.name);
                 Chessboard.Instance.PieceLeft(_tile);
             }
             else
@@ -149,7 +149,6 @@ public class ChessPiece : MonoBehaviour
                 Chessboard.Instance.PieceLeft(null);
             }
         }
-        objectCollider.enabled = true;
         IsGrabed = false;
 #endif
     }
