@@ -1,4 +1,4 @@
-//#define Testing 
+#define Testing 
 
 using System.Collections;
 using System.Collections.Generic;
@@ -59,7 +59,8 @@ public class Chessboard : MonoBehaviour
     private NotationWriter notationWriter = null;
     private ChessPiece WhiteKingRef = null;
     private ChessPiece BlackKingRef = null;
-    List<Vector2Int> movesToRemove = new List<Vector2Int>();
+    private List<Vector2Int> movesToRemove = new List<Vector2Int>();
+    private CheesPlayer botPlayer = null;
     public ChessPiece[,] ChessPieces => chessPieces;
     public int BlackDeadAmount => blackDead.Count;
     public int WhiteDeadAmount => whiteDead.Count;
@@ -88,6 +89,7 @@ public class Chessboard : MonoBehaviour
     {
         DrawBoard();
         SpawnAllPieces();
+        CreateBotPlayer();
 #if !Testing
         ActivationRayReference.action.performed += GrabPieceByRay;
         ActivationRayReference.action.canceled += LeftPieceByRay;
@@ -169,6 +171,16 @@ public class Chessboard : MonoBehaviour
             curentlyDragged.SetPosition(Camera.main.ScreenToWorldPoint(mousePosition));
         }
 #endif
+
+        if (botPlayer == null)
+        {
+            return;
+        }
+
+        if (IsWhiteTurn == false)
+        {
+            botPlayer.MakeRandomMove();
+        }
     }
 
     #region  VRIntegration
@@ -472,6 +484,12 @@ public class Chessboard : MonoBehaviour
         return true;
     }
 
+    public void PlayerMovePiece(ref ChessPiece _piece, int _x, int _y)
+    {
+        MoveTo(ref _piece, _x, _y);
+    }
+    #endregion
+
     #region SpecialMoves
     private void ProcessSpecialMove()
     {
@@ -756,6 +774,10 @@ public class Chessboard : MonoBehaviour
 
         SceneLoader.instance.LoadMenu();
     }
-    #endregion
 
+    private void CreateBotPlayer()
+    {
+        botPlayer = new GameObject("botPlayer").AddComponent<CheesPlayer>();
+        botPlayer.SetupPlayer();
+    }
 }
