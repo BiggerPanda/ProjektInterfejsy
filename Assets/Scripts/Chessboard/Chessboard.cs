@@ -1,4 +1,4 @@
-#define Testing 
+//#define Testing 
 
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +30,9 @@ public class Chessboard : MonoBehaviour
 
     public static Chessboard Instance { get; private set; }
     public event Action onPieceMove;
+    public event Action<TeamColor> onCheckMate;
     public bool IsWhiteTurn => isWhiteTurn;
+    public bool GameOver = false;
 
     [SerializeField] private float tileSize = 1.3f;
     [SerializeField] private GameObject tileGameObject;
@@ -61,10 +63,12 @@ public class Chessboard : MonoBehaviour
     private ChessPiece BlackKingRef = null;
     private List<Vector2Int> movesToRemove = new List<Vector2Int>();
     private CheesPlayer botPlayer = null;
+    private CheesPlayer player = null;
     public ChessPiece[,] ChessPieces => chessPieces;
     public int BlackDeadAmount => blackDead.Count;
     public int WhiteDeadAmount => whiteDead.Count;
-
+    public CheesPlayer Player => player;
+    public CheesPlayer BotPlayer => botPlayer;
 
     private void Awake()
     {
@@ -89,6 +93,7 @@ public class Chessboard : MonoBehaviour
     {
         DrawBoard();
         SpawnAllPieces();
+        CreatePlayer();
         CreateBotPlayer();
 #if !Testing
         ActivationRayReference.action.performed += GrabPieceByRay;
@@ -177,10 +182,20 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
-        if (IsWhiteTurn == false)
+        if (IsWhiteTurn == (botPlayer.playerColor == TeamColor.White))
         {
-            botPlayer.MakeRandomMove();
+            if(GameOver == true)
+            {
+                return;
+            }
+
+           StartCoroutine(botPlayer.MakeRandomMove());
         }
+    }
+
+    public void WinGame(TeamColor team)
+    {
+        CheckMate(team);
     }
 
     #region  VRIntegration
@@ -327,6 +342,9 @@ public class Chessboard : MonoBehaviour
     }
 
     #endregion
+
+    #region SpawnPieces
+
     public Tile GetTile(int x, int y)
     {
         if (x < 0 || x >= CHESSBOARD_SIZE_X || y < 0 || y >= CHESSBOARD_SIZE_Y)
@@ -348,9 +366,6 @@ public class Chessboard : MonoBehaviour
             }
         }
     }
-
-
-    #region SpawnPieces
 
     [Button("Spawn Pieces")]
     private void SpawnAllPieces()
@@ -475,6 +490,9 @@ public class Chessboard : MonoBehaviour
         ProcessSpecialMove();
 
         onPieceMove?.Invoke();
+        
+        player.UpdateChesspieces();
+        botPlayer.UpdateChesspieces();
 
         if (CheckForCheckmate())
         {
@@ -486,7 +504,29 @@ public class Chessboard : MonoBehaviour
 
     public void PlayerMovePiece(ref ChessPiece _piece, int _x, int _y)
     {
-        MoveTo(ref _piece, _x, _y);
+        curentlyDragged = _piece;
+        avaliableMoves = _piece.GetAvaliableMoves(ref chessPieces , CHESSBOARD_SIZE_X,CHESSBOARD_SIZE_Y);
+        specialMove = _piece.GetSpecialMoves(ref chessPieces, ref moveList, ref avaliableMoves);
+        PreventCheck();
+
+        Tile _tile = tiles[_x, _y];
+        bool validMove = MoveTo(ref _piece, _x, _y);
+        Debug.Log(validMove);
+        RemoveHighlightedTiles();
+        
+        if (validMove == false)
+        {
+            curentlyDragged.SetPosition(tiles[curentlyDragged.position.x, curentlyDragged.position.y].transform.position);
+            curentlyDragged = null;
+            Tile.IsPieceDraged = false;
+
+        }
+        else
+        {
+            curentlyDragged = null;
+            Tile.IsPieceDraged = false;
+            _tile.SetChessPiece(curentlyDragged);
+        }
     }
     #endregion
 
@@ -726,13 +766,18 @@ public class Chessboard : MonoBehaviour
             whiteDead.Add(_piece);
             _piece.SetScale(Vector3.one * deadSize);
             _piece.SetPosition(deathPlaceWhite.transform.position + new Vector3(0, 0, whiteDead.Count * tileSize / 2));
+            _piece.GetComponent<Collider>().enabled = false;
         }
         else
         {
             blackDead.Add(_piece);
             _piece.SetScale(Vector3.one * deadSize);
             _piece.SetPosition(deathPlaceBlack.transform.position + new Vector3(0, 0, blackDead.Count * tileSize / 2));
+            _piece.GetComponent<Collider>().enabled = false;
         }
+
+        player.UpdateChesspieces();
+        botPlayer.UpdateChesspieces();
     }
 
     private void HighlightAvaliableTiles()
@@ -763,6 +808,7 @@ public class Chessboard : MonoBehaviour
 
     private void CheckMate(TeamColor _team)
     {
+        GameOver = true;
         if (_team == TeamColor.White)
         {
             Debug.Log("Black Wins");
@@ -772,12 +818,19 @@ public class Chessboard : MonoBehaviour
             Debug.Log("White Wins");
         }
 
-        SceneLoader.instance.LoadMenu();
+        onCheckMate?.Invoke(_team);
     }
 
     private void CreateBotPlayer()
     {
         botPlayer = new GameObject("botPlayer").AddComponent<CheesPlayer>();
-        botPlayer.SetupPlayer();
+        botPlayer.SetupPlayer(TeamColor.Black);
+        botPlayer.isBot = true;
+    }
+
+    private void CreatePlayer()
+    {
+        player = new GameObject("Player").AddComponent<CheesPlayer>();
+        player.SetupPlayer(TeamColor.White);
     }
 }
